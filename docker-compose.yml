@@ -1,0 +1,45 @@
+# ── Development ─────────────────────────────────────────────────────────────
+# Uses SQLite (same as local dev). Backend and frontend hot-reload.
+#
+# Usage:
+#   docker compose up
+#
+# Frontend:  http://localhost:5173
+# Backend:   http://localhost:8000
+
+services:
+  backend:
+    build:
+      context: ./backend
+      target: dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www/html
+      - /var/www/html/vendor    # keep container vendor, not host
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /var/www/html/database/database.sqlite
+      CORS_ALLOWED_ORIGINS: http://localhost:5173
+      CACHE_STORE: file
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules    # keep container node_modules, not host
+    environment:
+      VITE_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped

@@ -1,7 +1,7 @@
 # ── base: shared PHP extensions and Composer ────────────────────────────────
-FROM php:8.3-cli-alpine AS base
+FROM php:8.4-cli-alpine AS base
 
-RUN apk add --no-cache linux-headers sqlite-dev mysql-dev \
+RUN apk add --no-cache linux-headers sqlite-dev mysql-dev git unzip \
     && docker-php-ext-install pdo pdo_sqlite pdo_mysql
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

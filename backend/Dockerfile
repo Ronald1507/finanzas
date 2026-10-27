@@ -10,6 +10,9 @@ WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
 
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # ── dev: full deps (including dev), artisan serve ───────────────────────────
 FROM base AS dev
 
@@ -18,6 +21,7 @@ RUN composer install
 COPY . .
 
 EXPOSE 8000
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 
 # ── prod: no dev deps, optimized autoloader ─────────────────────────────────
@@ -30,4 +34,5 @@ COPY . .
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 8000
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

@@ -6,30 +6,29 @@ RUN apk add --no-cache linux-headers sqlite-dev mysql-dev \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
-
-COPY composer.json composer.lock ./
-
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# ── dev: full deps (including dev), artisan serve ───────────────────────────
+WORKDIR /var/www/html
+
+# ── dev: install deps only; app code comes from the volume mount ─────────────
 FROM base AS dev
 
-RUN composer install
-
-COPY . .
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts
 
 EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 
-# ── prod: no dev deps, optimized autoloader ─────────────────────────────────
+# ── prod: no dev deps, optimized autoloader ──────────────────────────────────
 FROM base AS prod
 
-RUN composer install --no-dev --optimize-autoloader
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader
 
 COPY . .
+RUN composer dump-autoload --optimize --no-scripts
 
 RUN chown -R www-data:www-data storage bootstrap/cache
 

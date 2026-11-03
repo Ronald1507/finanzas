@@ -1,6 +1,6 @@
 /**
  * URLs de los endpoints del API backend.
- * Centraliza las 20 rutas para evitar strings dispersos en services.
+ * Centraliza las 14 rutas para evitar strings dispersos en services.
  *
  * @module config/apisUrl
  */
@@ -21,14 +21,6 @@ export const API_URLS = {
     PENDIENTES_BY_ID: (id) => `/pendientes/${id}`,
     PENDIENTES_CONCRETAR: (id) => `/pendientes/${id}/concretar`,
     PENDIENTES_ANULAR: (id) => `/pendientes/${id}/anular`,
-
-    // GastosFijos
-    GASTOS_FIJOS: '/gastos-fijos',
-    GASTOS_FIJOS_BY_ID: (id) => `/gastos-fijos/${id}`,
-    GASTOS_FIJOS_DESACTIVAR: (id) => `/gastos-fijos/${id}/desactivar`,
-    GASTOS_FIJOS_POR_MES: (mesId) => `/gastos-fijos/mes/${mesId}`,
-    GASTOS_FIJOS_PAGAR: (id) => `/gastos-fijos/${id}/pagar`,
-    GASTOS_FIJOS_PAGO: (id, mesId) => `/gastos-fijos/${id}/pago/${mesId}`,
 
     // SaldosDashboard
     DASHBOARD: '/dashboard',

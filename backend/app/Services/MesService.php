@@ -141,12 +141,12 @@ class MesService
                 $this->cuentaMesRepo->bulkInsert($rows);
             }
 
-            // 5. Clonar pendientes en estado 'pendiente' al mes nuevo (bulk INSERT — una sola query)
-            $pendientesAbiertas = $this->pendienteRepo->getPorMes($mes->id, null, 'pendiente');
+            // 5. Clonar pendientes al mes nuevo: recurrentes (cualquier estado) + no recurrentes pendientes
+            $clonables = $this->pendienteRepo->getClonablesPorCierre($mes->id);
             $ahora = now()->toDateTimeString();
             $rowsPendientes = [];
 
-            foreach ($pendientesAbiertas as $pendiente) {
+            foreach ($clonables as $pendiente) {
                 $rowsPendientes[] = [
                     'cuenta_id'          => $pendiente->cuenta_id,
                     'mes_id'             => $nuevoMes->id,
@@ -157,6 +157,7 @@ class MesService
                         ? $pendiente->fecha_estimada->format('Y-m-d')
                         : (string) $pendiente->fecha_estimada,
                     'estado'             => 'pendiente',
+                    'recurrente'         => $pendiente->recurrente,
                     'movimiento_id'      => null,
                     'pendiente_origen_id'=> $pendiente->id,
                     'created_at'         => $ahora,

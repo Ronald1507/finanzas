@@ -40,13 +40,14 @@ class PendienteController extends Controller
         try {
             $params = ValidacionUtils::validate(
                 [
-                    'mes_id'   => 'required|integer|min:1',
-                    'tipo'     => 'nullable|string|in:por_pagar,por_recibir',
-                    'estado'   => 'nullable|string|in:pendiente,realizado,anulado',
-                    'page'     => 'nullable|integer|min:1',
-                    'per_page' => 'nullable|integer|min:1|max:100',
+                    'mes_id'     => 'required|integer|min:1',
+                    'tipo'       => 'nullable|string|in:por_pagar,por_recibir',
+                    'estado'     => 'nullable|string|in:pendiente,realizado,anulado',
+                    'recurrente' => 'nullable|boolean',
+                    'page'       => 'nullable|integer|min:1',
+                    'per_page'   => 'nullable|integer|min:1|max:100',
                 ],
-                $request->only(['mes_id', 'tipo', 'estado', 'page', 'per_page']),
+                $request->only(['mes_id', 'tipo', 'estado', 'recurrente', 'page', 'per_page']),
                 onlyRules: true
             );
 
@@ -76,8 +77,9 @@ class PendienteController extends Controller
                     'monto'          => 'required|numeric|min:0.01',
                     'descripcion'    => 'required|string|max:500',
                     'fecha_estimada' => 'required|date|date_format:Y-m-d',
+                    'recurrente'     => 'nullable|boolean',
                 ],
-                $request->only(['cuenta_id', 'tipo', 'monto', 'descripcion', 'fecha_estimada']),
+                $request->only(['cuenta_id', 'tipo', 'monto', 'descripcion', 'fecha_estimada', 'recurrente']),
                 onlyRules: true
             );
 
@@ -108,8 +110,9 @@ class PendienteController extends Controller
                     'monto'          => 'nullable|numeric|min:0.01',
                     'descripcion'    => 'nullable|string|max:500',
                     'fecha_estimada' => 'nullable|date|date_format:Y-m-d',
+                    'recurrente'     => 'nullable|boolean',
                 ],
-                $request->only(['cuenta_id', 'tipo', 'monto', 'descripcion', 'fecha_estimada']),
+                $request->only(['cuenta_id', 'tipo', 'monto', 'descripcion', 'fecha_estimada', 'recurrente']),
                 onlyRules: true
             );
 

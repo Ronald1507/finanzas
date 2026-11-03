@@ -4,7 +4,6 @@
  *
  * @module features/Pendientes/views/PendientesListView
  */
-import React from 'react';
 import {
     Box,
     Button,
@@ -42,6 +41,8 @@ const TIPO_LABEL = {
  * @param {Function} props.onTipoFilterChange
  * @param {string} props.estadoFilter
  * @param {Function} props.onEstadoFilterChange
+ * @param {string} props.recurrenteFilter
+ * @param {Function} props.onRecurrenteFilterChange
  * @param {Function} props.onNew
  * @param {Function} props.onEdit
  * @param {Function} props.onConcretar
@@ -55,6 +56,8 @@ export default function PendientesListView({
     onTipoFilterChange,
     estadoFilter,
     onEstadoFilterChange,
+    recurrenteFilter,
+    onRecurrenteFilterChange,
     onNew,
     onEdit,
     onConcretar,
@@ -62,7 +65,24 @@ export default function PendientesListView({
     mesAbierto,
 }) {
     const columns = [
-        { label: 'Descripción', key: 'descripcion' },
+        {
+            label: 'Descripción',
+            key: 'descripcion',
+            render: (row) => (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {row.descripcion}
+                    {row.recurrente && (
+                        <Chip
+                            label="Recurrente"
+                            size="small"
+                            color="info"
+                            variant="outlined"
+                            data-testid="pendientes-chip-recurrente"
+                        />
+                    )}
+                </Box>
+            ),
+        },
         {
             label: 'Cuenta',
             key: 'cuenta',
@@ -152,6 +172,18 @@ export default function PendientesListView({
                 value={estadoFilter}
                 onChange={onEstadoFilterChange}
                 testId="pendientes-select-filtro-estado"
+            />
+
+            <ComboBox
+                label="Recurrente"
+                size="small"
+                placeholder="Todos"
+                fullWidth={false}
+                sx={{ width: { xs: '100%', sm: 180 } }}
+                options={[{ value: '1', label: 'Recurrentes' }, { value: '0', label: 'Únicos' }]}
+                value={recurrenteFilter}
+                onChange={onRecurrenteFilterChange}
+                testId="pendientes-select-filtro-recurrente"
             />
         </>
     );

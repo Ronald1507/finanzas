@@ -5,7 +5,6 @@ use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\PendienteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MesController;
-use App\Http\Controllers\GastoFijoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -74,32 +73,6 @@ Route::post('/pendientes/{id}/concretar', [PendienteController::class, 'concreta
 
 Route::post('/pendientes/{id}/anular', [PendienteController::class, 'anular'])
     ->name('pendientes.anular-pendiente');
-
-// ------------------------------------------------------------------
-// GastosFijos
-// ------------------------------------------------------------------
-// Las rutas con segmento literal (mes) deben ir ANTES de /{id} para no
-// interpretar el literal como un ID.
-Route::get('/gastos-fijos', [GastoFijoController::class, 'index'])
-    ->name('gastos-fijos.listar');
-
-Route::get('/gastos-fijos/mes/{mesId}', [GastoFijoController::class, 'indexPorMes'])
-    ->name('gastos-fijos.listar-por-mes');
-
-Route::post('/gastos-fijos', [GastoFijoController::class, 'store'])
-    ->name('gastos-fijos.crear');
-
-Route::put('/gastos-fijos/{id}', [GastoFijoController::class, 'update'])
-    ->name('gastos-fijos.actualizar');
-
-Route::post('/gastos-fijos/{id}/desactivar', [GastoFijoController::class, 'desactivar'])
-    ->name('gastos-fijos.desactivar');
-
-Route::post('/gastos-fijos/{id}/pagar', [GastoFijoController::class, 'pagar'])
-    ->name('gastos-fijos.pagar');
-
-Route::delete('/gastos-fijos/{id}/pago/{mesId}', [GastoFijoController::class, 'deshacerPago'])
-    ->name('gastos-fijos.deshacer-pago');
 
 // ------------------------------------------------------------------
 // SaldosDashboard

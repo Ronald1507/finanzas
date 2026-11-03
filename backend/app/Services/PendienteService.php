@@ -54,7 +54,7 @@ class PendienteService
     /**
      * Crea un pendiente en el mes abierto.
      *
-     * @param array<string, mixed> $datos  cuenta_id, tipo, monto, descripcion, fecha_estimada
+     * @param array<string, mixed> $datos  cuenta_id, tipo, monto, descripcion, fecha_estimada, recurrente?
      * @param array<string, mixed> $requestPermisos
      * @return array<string, mixed>
      */
@@ -80,6 +80,7 @@ class PendienteService
             'descripcion'    => $datos['descripcion'],
             'fecha_estimada' => $datos['fecha_estimada'],
             'estado'         => 'pendiente',
+            'recurrente'     => $datos['recurrente'] ?? false,
         ]);
 
         return $pendiente->toArray();
@@ -89,7 +90,7 @@ class PendienteService
      * Edita un pendiente; solo permitido en estado 'pendiente' y mes abierto.
      *
      * @param int   $id
-     * @param array<string, mixed> $datos
+     * @param array<string, mixed> $datos  cuenta_id?, tipo?, monto?, descripcion?, fecha_estimada?, recurrente?
      * @param array<string, mixed> $requestPermisos
      * @return array<string, mixed>
      */
@@ -126,6 +127,7 @@ class PendienteService
             'monto'          => $datos['monto']           ?? $pendiente->monto,
             'descripcion'    => $datos['descripcion']     ?? $pendiente->descripcion,
             'fecha_estimada' => $datos['fecha_estimada']  ?? $pendiente->fecha_estimada,
+            'recurrente'     => $datos['recurrente']      ?? $pendiente->recurrente,
         ]);
 
         return $pendiente->fresh()->toArray();

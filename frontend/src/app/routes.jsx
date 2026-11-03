@@ -23,9 +23,6 @@ const MovimientosModule = React.lazy(() =>
 const PendientesModule = React.lazy(() =>
     import('../features/Pendientes/PendientesModule')
 );
-const GastosFijosModule = React.lazy(() =>
-    import('../features/GastosFijos/GastosFijosModule')
-);
 const MesesModule = React.lazy(() =>
     import('../features/CierreMensual/MesesModule')
 );
@@ -58,7 +55,6 @@ export default function AppRoutes() {
                     <Route path={APP_CONFIG.ROUTES.CUENTAS} element={<CuentasModule />} />
                     <Route path={APP_CONFIG.ROUTES.MOVIMIENTOS} element={<MovimientosModule />} />
                     <Route path={APP_CONFIG.ROUTES.PENDIENTES} element={<PendientesModule />} />
-                    <Route path={APP_CONFIG.ROUTES.GASTOS_FIJOS} element={<GastosFijosModule />} />
                     <Route path={APP_CONFIG.ROUTES.MESES} element={<MesesModule />} />
                     <Route path="*" element={<Navigate to={APP_CONFIG.ROUTES.DASHBOARD} replace />} />
                 </Routes>

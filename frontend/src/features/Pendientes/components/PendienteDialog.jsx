@@ -3,7 +3,6 @@
  *
  * @module features/Pendientes/components/PendienteDialog
  */
-import React from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -13,6 +12,8 @@ import {
     TextField,
     Alert,
     CircularProgress,
+    Switch,
+    FormControlLabel,
 } from '@mui/material';
 import ComboBox from '../../../shared/components/ComboBox';
 
@@ -113,6 +114,19 @@ export default function PendienteDialog({ dialogState, cuentas = [] }) {
                     InputLabelProps={{ shrink: true }}
                     inputProps={{ 'data-testid': 'pendientes-input-fecha-estimada' }}
                 />
+
+                <FormControlLabel
+                    sx={{ mt: 2, display: 'block' }}
+                    control={
+                        <Switch
+                            checked={!!formData.recurrente}
+                            onChange={(e) => setField('recurrente', e.target.checked)}
+                            id="pendientes-switch-recurrente"
+                            inputProps={{ 'data-testid': 'pendientes-switch-recurrente' }}
+                        />
+                    }
+                    label="Recurrente (se repite cada mes)"
+                />
             </DialogContent>
             <DialogActions>
                 <Button
@@ -130,6 +144,7 @@ export default function PendienteDialog({ dialogState, cuentas = [] }) {
                         monto: parseFloat(data.monto) || 0,
                         descripcion: data.descripcion,
                         fecha_estimada: data.fecha_estimada,
+                        recurrente: !!data.recurrente,
                     }))}
                     variant="contained"
                     disabled={saving}

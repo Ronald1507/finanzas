@@ -19,7 +19,7 @@ export const pendientesService = {
      * @param {Object} params
      * @param {number} [params.page=1]
      * @param {string} [params.search='']
-     * @param {Object} [params.filters={}] - {mes_id, tipo, estado}
+     * @param {Object} [params.filters={}] - {mes_id, tipo, estado, recurrente}
      * @returns {Promise<Object>}
      */
     getList: async ({ page = 1, search = '', filters = {} } = {}) => {
@@ -27,6 +27,7 @@ export const pendientesService = {
         if (filters.mes_id) p.set('mes_id', filters.mes_id);
         if (filters.tipo) p.set('tipo', filters.tipo);
         if (filters.estado) p.set('estado', filters.estado);
+        if (filters.recurrente !== '' && filters.recurrente != null) p.set('recurrente', filters.recurrente);
         if (search) p.set('search', search);
         return httpClient.get(`${API_URLS.PENDIENTES}?${p.toString()}`);
     },
@@ -34,7 +35,7 @@ export const pendientesService = {
     /**
      * Crea un nuevo pendiente.
      *
-     * @param {Object} data - {cuenta_id, tipo, monto, descripcion, fecha_estimada}
+     * @param {Object} data - {cuenta_id, tipo, monto, descripcion, fecha_estimada, recurrente}
      * @returns {Promise<Object>}
      */
     create: async (data) => {
@@ -45,7 +46,7 @@ export const pendientesService = {
      * Actualiza un pendiente existente.
      *
      * @param {number} id
-     * @param {Object} data - {cuenta_id, tipo, monto, descripcion, fecha_estimada}
+     * @param {Object} data - {cuenta_id, tipo, monto, descripcion, fecha_estimada, recurrente}
      * @returns {Promise<Object>}
      */
     update: async (id, data) => {

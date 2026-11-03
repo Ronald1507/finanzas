@@ -21,7 +21,6 @@ export const APP_CONFIG = {
         CUENTAS: '/cuentas',
         MOVIMIENTOS: '/movimientos',
         PENDIENTES: '/pendientes',
-        GASTOS_FIJOS: '/gastos-fijos',
         MESES: '/meses',
     },
 };

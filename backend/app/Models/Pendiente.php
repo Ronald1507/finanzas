@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $descripcion
  * @property string $fecha_estimada
  * @property string $estado            pendiente|realizado|anulado
+ * @property bool   $recurrente
  * @property int|null $movimiento_id
  * @property int|null $pendiente_origen_id
  * @package App\Models
@@ -37,6 +38,7 @@ class Pendiente extends Model
         'descripcion',
         'fecha_estimada',
         'estado',
+        'recurrente',
         'movimiento_id',
         'pendiente_origen_id',
     ];
@@ -45,6 +47,7 @@ class Pendiente extends Model
     protected $casts = [
         'monto'          => 'decimal:2',
         'fecha_estimada' => 'date',
+        'recurrente'     => 'boolean',
     ];
 
     /**

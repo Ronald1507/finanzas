@@ -47,8 +47,9 @@ class PendienteRepository
     {
         $query = $this->model->newQuery()
             ->where('mes_id', $params['mes_id'])
-            ->when(isset($params['tipo']),   fn($q) => $q->where('tipo',   $params['tipo']))
-            ->when(isset($params['estado']), fn($q) => $q->where('estado', $params['estado']))
+            ->when(isset($params['tipo']),       fn($q) => $q->where('tipo',       $params['tipo']))
+            ->when(isset($params['estado']),     fn($q) => $q->where('estado',     $params['estado']))
+            ->when(isset($params['recurrente']), fn($q) => $q->where('recurrente', $params['recurrente']))
             ->with(['cuenta', 'mes'])
             ->orderBy('fecha_estimada');
 
@@ -56,21 +57,44 @@ class PendienteRepository
     }
 
     /**
-     * Retorna pendientes de un mes con filtros opcionales de tipo y estado.
+     * Retorna pendientes de un mes con filtros opcionales de tipo, estado y recurrente.
      *
      * Uso interno (cierre mensual, reapertura). Para el endpoint API usar paginatePorMes().
      *
      * @param int         $mesId
-     * @param string|null $tipo    por_pagar|por_recibir
-     * @param string|null $estado  pendiente|realizado|anulado
+     * @param string|null $tipo       por_pagar|por_recibir
+     * @param string|null $estado     pendiente|realizado|anulado
+     * @param bool|null   $recurrente true|false|null (sin filtro)
      * @return Collection<int, Pendiente>
      */
-    public function getPorMes(int $mesId, ?string $tipo = null, ?string $estado = null): Collection
+    public function getPorMes(int $mesId, ?string $tipo = null, ?string $estado = null, ?bool $recurrente = null): Collection
     {
         return $this->model->newQuery()
             ->where('mes_id', $mesId)
-            ->when($tipo !== null, fn($q) => $q->where('tipo', $tipo))
-            ->when($estado !== null, fn($q) => $q->where('estado', $estado))
+            ->when($tipo !== null,       fn($q) => $q->where('tipo',       $tipo))
+            ->when($estado !== null,     fn($q) => $q->where('estado',     $estado))
+            ->when(!is_null($recurrente), fn($q) => $q->where('recurrente', $recurrente))
+            ->with(['cuenta', 'mes'])
+            ->orderBy('fecha_estimada')
+            ->get();
+    }
+
+    /**
+     * Retorna los pendientes a clonar en el cierre mensual.
+     *
+     * Criterio: recurrentes (cualquier estado) + no recurrentes en estado 'pendiente'.
+     *
+     * @param int $mesId
+     * @return Collection<int, Pendiente>
+     */
+    public function getClonablesPorCierre(int $mesId): Collection
+    {
+        return $this->model->newQuery()
+            ->where('mes_id', $mesId)
+            ->where(function ($q) {
+                $q->where('recurrente', true)
+                  ->orWhere(fn($q2) => $q2->where('recurrente', false)->where('estado', 'pendiente'));
+            })
             ->with(['cuenta', 'mes'])
             ->orderBy('fecha_estimada')
             ->get();

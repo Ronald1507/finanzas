@@ -3,7 +3,7 @@
  *
  * @module features/Pendientes/PendientesModule
  */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import useCrudList from '../../shared/hooks/useCrudList';
 import useFlatList from '../../shared/hooks/useFlatList';
@@ -30,13 +30,15 @@ export default function PendientesModule() {
     const mesAbierto = mesSeleccionado?.estado === 'abierto';
     const mesId = mesSeleccionado?.id;
 
+    // Filtros de listado: tipo, estado y recurrente se pasan a useCrudList como params
     const [tipoFilter, setTipoFilter] = useState('');
     const [estadoFilter, setEstadoFilter] = useState('');
+    const [recurrenteFilter, setRecurrenteFilter] = useState('');
 
     const listHook = useCrudList({
         service: pendientesService,
         active: !!mesId,
-        params: { mes_id: mesId, tipo: tipoFilter, estado: estadoFilter },
+        params: { mes_id: mesId, tipo: tipoFilter, estado: estadoFilter, recurrente: recurrenteFilter },
     });
 
     const cuentasFlat = useFlatList(cuentasService);
@@ -44,7 +46,7 @@ export default function PendientesModule() {
 
     const dialogState = useDialogState(
         pendientesService,
-        { cuenta_id: '', tipo: '', monto: '', descripcion: '', fecha_estimada: '' },
+        { cuenta_id: '', tipo: '', monto: '', descripcion: '', fecha_estimada: '', recurrente: false },
         {
             onSuccess: [() => listHook.refresh()],
             validate: (data) => validateForm(data, {
@@ -136,6 +138,8 @@ export default function PendientesModule() {
                 onTipoFilterChange={setTipoFilter}
                 estadoFilter={estadoFilter}
                 onEstadoFilterChange={setEstadoFilter}
+                recurrenteFilter={recurrenteFilter}
+                onRecurrenteFilterChange={setRecurrenteFilter}
                 onNew={dialogState.openNew}
                 onEdit={dialogState.openEdit}
                 onConcretar={handleConcretar}

@@ -79,7 +79,6 @@ class MovimientoService
             'fecha'       => $datos['fecha'],
             'descripcion' => $datos['descripcion'],
             'categoria'   => $datos['categoria'],
-            'gasto_fijo_id' => $datos['gasto_fijo_id'] ?? null,
         ]);
 
         return $movimiento->toArray();

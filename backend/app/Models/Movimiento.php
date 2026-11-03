@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $descripcion
  * @property string $categoria
  * @property int|null $pendiente_id
- * @property int|null $gasto_fijo_id
  * @property int|null $movimiento_relacionado_id
  * @package App\Models
  */
@@ -40,7 +39,6 @@ class Movimiento extends Model
         'descripcion',
         'categoria',
         'pendiente_id',
-        'gasto_fijo_id',
         'movimiento_relacionado_id',
     ];
 
@@ -78,16 +76,6 @@ class Movimiento extends Model
     public function pendiente(): BelongsTo
     {
         return $this->belongsTo(Pendiente::class, 'pendiente_id');
-    }
-
-    /**
-     * Gasto fijo que originó este movimiento (si aplica).
-     *
-     * @return BelongsTo<GastoFijo, self>
-     */
-    public function gastoFijo(): BelongsTo
-    {
-        return $this->belongsTo(GastoFijo::class, 'gasto_fijo_id');
     }
 
     /**

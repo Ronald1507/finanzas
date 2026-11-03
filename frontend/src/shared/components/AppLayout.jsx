@@ -3,7 +3,7 @@
  *
  * @module shared/components/AppLayout
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Box,
@@ -27,7 +27,6 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import LockIcon from '@mui/icons-material/Lock';
 import { APP_CONFIG } from '../../config/app.config';
 
@@ -38,7 +37,6 @@ const NAV_ITEMS = [
     { label: 'Cuentas', path: APP_CONFIG.ROUTES.CUENTAS, icon: <AccountBalanceIcon /> },
     { label: 'Movimientos', path: APP_CONFIG.ROUTES.MOVIMIENTOS, icon: <SwapHorizIcon /> },
     { label: 'Pendientes', path: APP_CONFIG.ROUTES.PENDIENTES, icon: <PendingActionsIcon /> },
-    { label: 'Gastos Fijos', path: APP_CONFIG.ROUTES.GASTOS_FIJOS, icon: <ReceiptLongIcon /> },
     { label: 'Cierre Mensual', path: APP_CONFIG.ROUTES.MESES, icon: <LockIcon /> },
 ];
 

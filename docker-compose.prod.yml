@@ -1,10 +1,9 @@
 # ── Production ──────────────────────────────────────────────────────────────
-# Uses MySQL. Frontend compiled to static assets served by nginx.
+# Uses PostgreSQL. Frontend compiled to static assets served by nginx.
 #
 # Required env vars (set in shell or a .env file at this directory):
 #   APP_KEY            — Laravel app key (base64:...)
-#   DB_PASSWORD        — MySQL user password
-#   DB_ROOT_PASSWORD   — MySQL root password
+#   DB_PASSWORD        — PostgreSQL user password
 #   VITE_API_URL       — Public URL of the backend (e.g. https://api.tudominio.com)
 #
 # Usage:
@@ -15,17 +14,16 @@
 
 services:
   db:
-    image: mysql:8.0
+    image: postgres:16-alpine
     environment:
-      MYSQL_DATABASE: finanzas
-      MYSQL_USER: finanzas
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      POSTGRES_DB: finanzas
+      POSTGRES_USER: finanzas
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U finanzas"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -44,9 +42,9 @@ services:
       APP_DEBUG: "false"
       APP_KEY: ${APP_KEY}
       APP_URL: ${BACKEND_URL:-http://localhost:8000}
-      DB_CONNECTION: mysql
+      DB_CONNECTION: pgsql
       DB_HOST: db
-      DB_PORT: 3306
+      DB_PORT: 5432
       DB_DATABASE: finanzas
       DB_USERNAME: finanzas
       DB_PASSWORD: ${DB_PASSWORD}

@@ -3,7 +3,7 @@
 ## Stack
 - Backend: Laravel 11+ (PHP 8.2+), API REST
 - Frontend: React 18+ + Vite (standalone)
-- Base de datos: SQLite (desarrollo) / MySQL (producción)
+- Base de datos: PostgreSQL 16 (todos los ambientes — dev, qa, prod)
 - Mensajería: N/A
 
 ## Estándar de desarrollo

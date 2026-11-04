@@ -1,13 +1,32 @@
 # ── Development ─────────────────────────────────────────────────────────────
-# Uses SQLite (same as local dev). Backend and frontend hot-reload.
+# Uses PostgreSQL (same engine as production). Backend and frontend hot-reload.
 #
 # Usage:
 #   docker compose up
 #
 # Frontend:  http://localhost:5173
 # Backend:   http://localhost:8000
+# DB:        localhost:5432  (user: finanzas / pass: finanzas)
 
 services:
+  db:
+    image: postgres:16-alpine
+    profiles: [local-db]
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-finanzas}
+      POSTGRES_USER: ${DB_USERNAME:-finanzas}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-finanzas}
+    volumes:
+      - db_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-finanzas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
@@ -16,14 +35,18 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/var/www/html
-      - /var/www/html/vendor    # keep container vendor, not host
+      - /var/www/html/vendor
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
       APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
       APP_URL: http://localhost:8000
-      DB_CONNECTION: sqlite
-      DB_DATABASE: /var/www/html/database/database.sqlite
+      DB_CONNECTION: pgsql
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE:-finanzas}
+      DB_USERNAME: ${DB_USERNAME:-finanzas}
+      DB_PASSWORD: ${DB_PASSWORD:-finanzas}
       CORS_ALLOWED_ORIGINS: http://localhost:5173
       CACHE_STORE: file
       SESSION_DRIVER: file
@@ -38,9 +61,12 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules    # keep container node_modules, not host
+      - /app/node_modules
     environment:
       VITE_API_URL: http://localhost:8000
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  db_data_dev:

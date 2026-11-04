@@ -39,6 +39,19 @@ const PENDIENTE_POR_RECIBIR = {
     movimiento_id: null,
 };
 
+const PENDIENTE_RECURRENTE = {
+    id: 3,
+    cuenta_id: 1,
+    cuenta: CUENTA_MOCK,
+    tipo: 'por_pagar',
+    monto: 50000,
+    descripcion: 'Alquiler mensual',
+    fecha_estimada: '2026-06-30',
+    estado: 'pendiente',
+    movimiento_id: null,
+    recurrente: true,
+};
+
 // ── Helpers locales ────────────────────────────────────────────────────────
 async function mockPendientesList(page: any, items = [PENDIENTE_POR_PAGAR]) {
     await page.route('**/api/pendientes**', async (route: any) => {
@@ -349,5 +362,180 @@ test.describe('Pendientes — mock', () => {
         await page.getByRole('option', { name: 'Realizado' }).click();
         await page.waitForTimeout(600);
         expect(capturedUrl).toContain('estado=realizado');
+    });
+
+    // ── Recurrente ────────────────────────────────────────────────────────────
+    /**
+     * Test: crear pendiente con toggle recurrente ON muestra el chip en la lista.
+     *
+     * Flow:
+     * 1. Abrir dialog, llenar campos, activar el switch recurrente
+     * 2. POST mock devuelve pendiente con recurrente=true
+     * 3. GET de refresh devuelve el pendiente recurrente
+     * 4. Verificar que el chip "Recurrente" es visible en la tabla
+     *
+     * Objetivo: el toggle persiste y el indicador visual aparece correctamente.
+     */
+    test('creates pendiente with recurrente toggle and shows chip', async ({ page }) => {
+        let listCallCount = 0;
+        await page.route('**/api/pendientes**', async (route) => {
+            const method = route.request().method();
+            if (method === 'GET') {
+                listCallCount++;
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify(paginatedEnvelope(listCallCount > 1 ? [PENDIENTE_RECURRENTE] : [])),
+                });
+            } else if (method === 'POST') {
+                await route.fulfill({
+                    status: 201,
+                    contentType: 'application/json',
+                    body: JSON.stringify(successEnvelope(PENDIENTE_RECURRENTE)),
+                });
+            } else {
+                await route.continue();
+            }
+        });
+
+        await page.goto(`${FRONTEND_URL}${ROUTES.PENDIENTES}`);
+        await page.locator('#pendientes-btn-nuevo').click();
+        await page.locator('#pendientes-select-cuenta').click();
+        await page.getByRole('option', { name: 'Cuenta BCI' }).click();
+        await page.locator('#pendientes-select-tipo').click();
+        await page.getByRole('option', { name: 'Por Pagar' }).click();
+        await page.getByTestId('pendientes-input-monto').fill('50000');
+        await page.getByTestId('pendientes-input-descripcion').fill('Alquiler mensual');
+        await page.locator('#pendientes-switch-recurrente').check({ force: true });
+
+        await page.locator('#pendientes-dialog-btn-guardar').click();
+        await expect(page.getByRole('dialog')).not.toBeVisible();
+        await expect(page.getByTestId('pendientes-chip-recurrente')).toBeVisible();
+    });
+
+    /**
+     * Test: crear pendiente sin activar el toggle no muestra el chip.
+     *
+     * Flow:
+     * 1. Abrir dialog, llenar campos sin tocar el switch
+     * 2. POST mock devuelve pendiente con recurrente=false (default)
+     * 3. Verificar que el chip "Recurrente" NO aparece
+     *
+     * Objetivo: el default false del toggle es respetado por la UI.
+     */
+    test('creates pendiente without toggle keeps recurrente false (no chip)', async ({ page }) => {
+        let listCallCount = 0;
+        await page.route('**/api/pendientes**', async (route) => {
+            const method = route.request().method();
+            if (method === 'GET') {
+                listCallCount++;
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify(paginatedEnvelope(listCallCount > 1 ? [PENDIENTE_POR_PAGAR] : [])),
+                });
+            } else if (method === 'POST') {
+                await route.fulfill({
+                    status: 201,
+                    contentType: 'application/json',
+                    body: JSON.stringify(successEnvelope(PENDIENTE_POR_PAGAR)),
+                });
+            } else {
+                await route.continue();
+            }
+        });
+
+        await page.goto(`${FRONTEND_URL}${ROUTES.PENDIENTES}`);
+        await page.locator('#pendientes-btn-nuevo').click();
+        await page.locator('#pendientes-select-cuenta').click();
+        await page.getByRole('option', { name: 'Cuenta BCI' }).click();
+        await page.locator('#pendientes-select-tipo').click();
+        await page.getByRole('option', { name: 'Por Pagar' }).click();
+        await page.getByTestId('pendientes-input-monto').fill('80000');
+        await page.getByTestId('pendientes-input-descripcion').fill('Pago de servicios');
+        // intentionally skip the recurrente toggle — default is false
+
+        await page.locator('#pendientes-dialog-btn-guardar').click();
+        await expect(page.getByRole('dialog')).not.toBeVisible();
+        await expect(page.getByTestId('pendientes-chip-recurrente')).not.toBeVisible();
+    });
+
+    /**
+     * Test: el filtro "Recurrentes" envía recurrente=1 al API.
+     *
+     * Flow:
+     * 1. Navegar a /pendientes
+     * 2. Seleccionar "Recurrentes" en el filtro recurrente
+     * 3. Verificar que la petición GET incluye recurrente=1
+     *
+     * Objetivo: el filtro de recurrente pasa el parámetro correcto.
+     */
+    test('filter by Recurrentes sends recurrente=1 to API', async ({ page }) => {
+        let capturedUrl = '';
+        await page.route('**/api/pendientes**', async (route) => {
+            if (route.request().method() === 'GET') {
+                capturedUrl = route.request().url();
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify(paginatedEnvelope([])),
+                });
+            } else {
+                await route.continue();
+            }
+        });
+
+        await page.goto(`${FRONTEND_URL}${ROUTES.PENDIENTES}`);
+        await page.getByTestId('pendientes-select-filtro-recurrente').click();
+        await page.getByRole('option', { name: 'Recurrentes' }).click();
+        await page.waitForTimeout(600);
+        expect(capturedUrl).toContain('recurrente=1');
+    });
+
+    /**
+     * Test: el filtro "Únicos" envía recurrente=0 al API.
+     *
+     * Flow:
+     * 1. Navegar a /pendientes
+     * 2. Seleccionar "Únicos" en el filtro recurrente
+     * 3. Verificar que la petición GET incluye recurrente=0
+     *
+     * Objetivo: el filtro único pasa el parámetro correcto.
+     */
+    test('filter by Únicos sends recurrente=0 to API', async ({ page }) => {
+        let capturedUrl = '';
+        await page.route('**/api/pendientes**', async (route) => {
+            if (route.request().method() === 'GET') {
+                capturedUrl = route.request().url();
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify(paginatedEnvelope([])),
+                });
+            } else {
+                await route.continue();
+            }
+        });
+
+        await page.goto(`${FRONTEND_URL}${ROUTES.PENDIENTES}`);
+        await page.getByTestId('pendientes-select-filtro-recurrente').click();
+        await page.getByRole('option', { name: 'Únicos' }).click();
+        await page.waitForTimeout(600);
+        expect(capturedUrl).toContain('recurrente=0');
+    });
+
+    /**
+     * Test: navegar a /gastos-fijos redirige al Dashboard (ruta eliminada).
+     *
+     * Flow:
+     * 1. Navegar directamente a /gastos-fijos
+     * 2. Verificar que la URL cambia a /dashboard (fallback catch-all)
+     *
+     * Objetivo: confirmar que GastosFijos fue removido de las rutas SPA.
+     */
+    test('navigating to /gastos-fijos redirects to dashboard', async ({ page }) => {
+        await page.goto(`${FRONTEND_URL}/gastos-fijos`);
+        await page.waitForLoadState('domcontentloaded');
+        await expect(page).toHaveURL(/dashboard/);
     });
 });

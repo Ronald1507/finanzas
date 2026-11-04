@@ -201,7 +201,7 @@ Se actualizan primero las referencias cruzadas que apuntan a GastosFijos, luego 
 - Risk: none.
 
 ### T-F10 · Tests E2E Pendientes + limpieza de GastosFijos
-- [ ] Specs: specs/pendientes (escenarios), specs/gastos-fijos (REMOVED)
+- [x] Specs: specs/pendientes (escenarios), specs/gastos-fijos (REMOVED)
 - Ruta: inline
 - Archivos: `frontend/tests/modules/Pendientes/*.spec.ts`; eliminar specs de GastosFijos si existen bajo `frontend/tests/`.
 - Cubrir con Playwright: crear pendiente con `recurrente=true` (toggle `pendientes-switch-recurrente`) y verificar chip `pendientes-chip-recurrente`; crear sin tocar el toggle → default (sin chip); filtrar por "Recurrentes"/"Únicos" (`pendientes-select-filtro-recurrente`) y verificar el subconjunto.

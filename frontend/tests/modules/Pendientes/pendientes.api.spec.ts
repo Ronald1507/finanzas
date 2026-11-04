@@ -76,6 +76,48 @@ test.describe('Pendientes — API real', () => {
     });
 
     /**
+     * Test: crear pendiente recurrente vía UI persiste recurrente=true en la API.
+     *
+     * Flow:
+     * 1. Navegar a /pendientes
+     * 2. Abrir dialog, llenar campos y activar el switch recurrente
+     * 3. Guardar y verificar que el chip "Recurrente" aparece en la lista
+     * 4. Verificar vía API que el campo recurrente es true
+     *
+     * Objetivo: el toggle persiste correctamente en la DB.
+     */
+    test('can create pendiente recurrente via UI and verify in API', async ({ page, request }) => {
+        if (!mesId || !cuentaId) test.skip();
+
+        await page.goto(`${FRONTEND_URL}${ROUTES.PENDIENTES}`);
+        await page.waitForLoadState('networkidle');
+
+        await page.locator('#pendientes-btn-nuevo').click();
+        await expect(page.getByRole('dialog')).toBeVisible();
+
+        await page.locator('#pendientes-select-cuenta').click();
+        await page.getByRole('option').first().click();
+        await page.locator('#pendientes-select-tipo').click();
+        await page.getByRole('option', { name: 'Por Pagar' }).click();
+        await page.getByTestId('pendientes-input-monto').fill('75000');
+        await page.getByTestId('pendientes-input-descripcion').fill('Recurrente E2E Test');
+        await page.getByTestId('pendientes-input-fecha-estimada').fill('2026-06-30');
+        await page.locator('#pendientes-switch-recurrente').check({ force: true });
+
+        await page.locator('#pendientes-dialog-btn-guardar').click();
+        await expect(page.getByRole('dialog')).not.toBeVisible();
+        await expect(page.getByTestId('pendientes-chip-recurrente')).toBeVisible();
+
+        // Verify via API
+        const res = await request.get(`${API_BASE}/pendientes?mes_id=${mesId}`);
+        const body = await res.json();
+        const pendientes = body.data?.data ?? body.data ?? [];
+        const creado = pendientes.find((p: any) => p.descripcion === 'Recurrente E2E Test');
+        expect(creado).toBeTruthy();
+        expect(creado.recurrente).toBe(true);
+    });
+
+    /**
      * Test: concretar pendiente vía UI genera el movimiento real.
      *
      * Flow:

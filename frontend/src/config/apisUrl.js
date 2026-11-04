@@ -19,6 +19,7 @@ export const API_URLS = {
     MOVIMIENTOS: '/movimientos',
     MOVIMIENTOS_BY_ID: (id) => `/movimientos/${id}`,
     MOVIMIENTOS_TRANSFERENCIA: '/movimientos/transferencia',
+    MOVIMIENTOS_BUSCAR: '/movimientos/buscar',
 
     // Pendientes
     PENDIENTES: '/pendientes',

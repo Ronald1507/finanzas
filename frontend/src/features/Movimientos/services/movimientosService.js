@@ -73,4 +73,16 @@ export const movimientosService = {
     transferir: async (data) => {
         return httpClient.post(API_URLS.MOVIMIENTOS_TRANSFERENCIA, data);
     },
+
+    buscar: async (filters = {}) => {
+        const p = new URLSearchParams();
+        if (filters.q) p.set('q', filters.q);
+        if (filters.categoria_id) p.set('categoria_id', filters.categoria_id);
+        if (filters.tipo) p.set('tipo', filters.tipo);
+        if (filters.cuenta_id) p.set('cuenta_id', filters.cuenta_id);
+        if (filters.fecha_desde) p.set('fecha_desde', filters.fecha_desde);
+        if (filters.fecha_hasta) p.set('fecha_hasta', filters.fecha_hasta);
+        if (filters.page) p.set('page', filters.page);
+        return httpClient.get(`${API_URLS.MOVIMIENTOS_BUSCAR}?${p.toString()}`);
+    },
 };

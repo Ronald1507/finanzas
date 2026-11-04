@@ -4,7 +4,7 @@
  * @module features/Movimientos/MovimientosModule
  */
 import React, { useState, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { Box, Tabs, Tab } from '@mui/material';
 import useCrudList from '../../shared/hooks/useCrudList';
 import useFlatList from '../../shared/hooks/useFlatList';
 import useDialogState from '../../shared/hooks/useDialogState';
@@ -14,6 +14,7 @@ import { movimientosService } from './services/movimientosService';
 import { cuentasService } from '../GestionCuentas/services/cuentasService';
 import { categoriasService } from '../GestionCategorias/services/categoriasService';
 import MovimientosListView from './views/MovimientosListView';
+import BuscarMovimientosView from './views/BuscarMovimientosView';
 import MovimientoDialog from './components/MovimientoDialog';
 import TransferenciaDialog from './components/TransferenciaDialog';
 import ConfirmDialog from '../../shared/components/ConfirmDialog';
@@ -28,6 +29,8 @@ import { validateForm } from '../../shared/utils/validateForm';
  * @returns {JSX.Element}
  */
 export default function MovimientosModule() {
+    const [tab, setTab] = useState(0);
+
     const mesSeleccionado = useMesStore((s) => s.mesSeleccionado);
     const mesAbierto = mesSeleccionado?.estado === 'abierto';
     const mesId = mesSeleccionado?.id;
@@ -163,27 +166,41 @@ export default function MovimientosModule() {
 
     return (
         <Box>
-            <MovimientosListView
-                listHook={listHook}
-                cuentas={cuentasFlat.items}
-                categorias={categoriasFlat.items}
-                cuentaFilter={cuentaFilter}
-                onCuentaFilterChange={setCuentaFilter}
-                tipoFilter={tipoFilter}
-                onTipoFilterChange={setTipoFilter}
-                categoriaFilter={categoriaFilter}
-                onCategoriaFilterChange={setCategoriaFilter}
-                onNew={dialogState.openNew}
-                onEdit={(item) => dialogState.openEdit({ ...item, fecha: fechaParaInput(item.fecha) })}
-                onDelete={(id) => {
-                    const item = listHook.items.find((m) => m.id === id);
-                    if (item) handleDelete(item);
-                }}
-                onTransferencia={handleOpenTransferencia}
-                mesAbierto={mesAbierto}
-                cuentasSaldos={dashboardHook.cuentas}
-                loadingSaldos={dashboardHook.loading}
-            />
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 1, borderBottom: 1, borderColor: 'divider' }}>
+                <Tab label="Movimientos" id="tab-movimientos" />
+                <Tab label="Buscar" id="tab-buscar" />
+            </Tabs>
+
+            {tab === 0 && (
+                <MovimientosListView
+                    listHook={listHook}
+                    cuentas={cuentasFlat.items}
+                    categorias={categoriasFlat.items}
+                    cuentaFilter={cuentaFilter}
+                    onCuentaFilterChange={setCuentaFilter}
+                    tipoFilter={tipoFilter}
+                    onTipoFilterChange={setTipoFilter}
+                    categoriaFilter={categoriaFilter}
+                    onCategoriaFilterChange={setCategoriaFilter}
+                    onNew={dialogState.openNew}
+                    onEdit={(item) => dialogState.openEdit({ ...item, fecha: fechaParaInput(item.fecha) })}
+                    onDelete={(id) => {
+                        const item = listHook.items.find((m) => m.id === id);
+                        if (item) handleDelete(item);
+                    }}
+                    onTransferencia={handleOpenTransferencia}
+                    mesAbierto={mesAbierto}
+                    cuentasSaldos={dashboardHook.cuentas}
+                    loadingSaldos={dashboardHook.loading}
+                />
+            )}
+
+            {tab === 1 && (
+                <BuscarMovimientosView
+                    cuentas={cuentasFlat.items}
+                    categorias={categoriasFlat.items}
+                />
+            )}
 
             <MovimientoDialog
                 dialogState={wrappedDialogState}

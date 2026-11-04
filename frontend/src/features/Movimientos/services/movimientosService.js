@@ -28,7 +28,7 @@ export const movimientosService = {
         if (filters.mes_id) p.set('mes_id', filters.mes_id);
         if (filters.cuenta_id) p.set('cuenta_id', filters.cuenta_id);
         if (filters.tipo) p.set('tipo', filters.tipo);
-        if (filters.categoria) p.set('categoria', filters.categoria);
+        if (filters.categoria_id) p.set('categoria_id', filters.categoria_id);
         if (search) p.set('search', search);
         return httpClient.get(`${API_URLS.MOVIMIENTOS}?${p.toString()}`);
     },

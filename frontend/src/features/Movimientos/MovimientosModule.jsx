@@ -12,6 +12,7 @@ import useMesStore from '../../shared/hooks/useMesStore';
 import useDashboard from '../SaldosDashboard/hooks/useDashboard';
 import { movimientosService } from './services/movimientosService';
 import { cuentasService } from '../GestionCuentas/services/cuentasService';
+import { categoriasService } from '../GestionCategorias/services/categoriasService';
 import MovimientosListView from './views/MovimientosListView';
 import MovimientoDialog from './components/MovimientoDialog';
 import TransferenciaDialog from './components/TransferenciaDialog';
@@ -33,7 +34,7 @@ export default function MovimientosModule() {
 
     const [cuentaFilter, setCuentaFilter] = useState('');
     const [tipoFilter, setTipoFilter] = useState('');
-    const [categoriaFilter, setCategoriaFilter] = useState('');
+    const [categoriaFilter, setCategoriaFilter] = useState('');  // categoria_id
 
     const listHook = useCrudList({
         service: movimientosService,
@@ -42,18 +43,19 @@ export default function MovimientosModule() {
             mes_id: mesId,
             cuenta_id: cuentaFilter,
             tipo: tipoFilter,
-            categoria: categoriaFilter,
+            categoria_id: categoriaFilter,
         },
     });
 
     const dashboardHook = useDashboard();
 
     const cuentasFlat = useFlatList(cuentasService);
-    useEffect(() => { cuentasFlat.fetch(); }, []);
+    const categoriasFlat = useFlatList(categoriasService);
+    useEffect(() => { cuentasFlat.fetch(); categoriasFlat.fetch(); }, []);
 
     const dialogState = useDialogState(
         movimientosService,
-        { cuenta_id: '', tipo: '', monto: '', fecha: hoyParaInput(), descripcion: '', categoria: '' },
+        { cuenta_id: '', tipo: '', monto: '', fecha: hoyParaInput(), descripcion: '', categoria_id: '' },
         {
             onSuccess: [() => { listHook.refresh(); dashboardHook.refresh(); }],
             validate: (data) => validateForm(data, {
@@ -62,7 +64,6 @@ export default function MovimientosModule() {
                 monto: { required: true, type: 'number', positive: true, label: 'El monto' },
                 fecha: { required: true, label: 'La fecha' },
                 descripcion: { required: true, maxLength: 500, label: 'La descripción' },
-                categoria: { required: true, label: 'La categoría' },
             }),
         },
     );
@@ -165,6 +166,7 @@ export default function MovimientosModule() {
             <MovimientosListView
                 listHook={listHook}
                 cuentas={cuentasFlat.items}
+                categorias={categoriasFlat.items}
                 cuentaFilter={cuentaFilter}
                 onCuentaFilterChange={setCuentaFilter}
                 tipoFilter={tipoFilter}
@@ -186,6 +188,7 @@ export default function MovimientosModule() {
             <MovimientoDialog
                 dialogState={wrappedDialogState}
                 cuentas={cuentasFlat.items}
+                categorias={categoriasFlat.items}
                 mesAbierto={mesAbierto}
             />
 

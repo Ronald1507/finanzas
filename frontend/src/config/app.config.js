@@ -22,5 +22,6 @@ export const APP_CONFIG = {
         MOVIMIENTOS: '/movimientos',
         PENDIENTES: '/pendientes',
         MESES: '/meses',
+        CATEGORIAS: '/categorias',
     },
 };

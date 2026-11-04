@@ -26,6 +26,7 @@ import { Autocomplete, TextField } from '@mui/material';
  * @param {Function} [props.getOptionDisabled] - (option) => boolean para deshabilitar opciones.
  * @param {string} [props.testId] - data-testid del input.
  * @param {Object} [props.sx] - Estilos MUI sx aplicados al Autocomplete.
+ * @param {Function} [props.renderOption] - Custom renderOption para Autocomplete (props, option) => node.
  * @returns {JSX.Element}
  */
 export default function ComboBox({
@@ -43,6 +44,7 @@ export default function ComboBox({
     fullWidth = true,
     testId,
     sx,
+    renderOption,
 }) {
     const selected = options.find((o) => String(o.value) === String(value)) ?? null;
 
@@ -59,6 +61,7 @@ export default function ComboBox({
             fullWidth={fullWidth}
             noOptionsText="Sin coincidencias"
             sx={sx}
+            {...(renderOption && { renderOption })}
             renderInput={(params) => (
                 <TextField
                     {...params}

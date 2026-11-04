@@ -14,6 +14,7 @@ import {
     Alert,
     CircularProgress,
     Typography,
+    Box,
 } from '@mui/material';
 import ComboBox from '../../../shared/components/ComboBox';
 import { hoyParaInput, fechaParaInput } from '../../../shared/utils/formatearFecha';
@@ -27,7 +28,7 @@ import { hoyParaInput, fechaParaInput } from '../../../shared/utils/formatearFec
  * @param {boolean} props.mesAbierto - Si el mes está abierto
  * @returns {JSX.Element}
  */
-export default function MovimientoDialog({ dialogState, cuentas = [], mesAbierto }) {
+export default function MovimientoDialog({ dialogState, cuentas = [], categorias = [], mesAbierto }) {
     const { open, formData, errors, saving, close, setField, save } = dialogState;
     const esEdicion = !!formData.id;
     const esTransferencia = !!formData.movimiento_relacionado_id;
@@ -135,19 +136,29 @@ export default function MovimientoDialog({ dialogState, cuentas = [], mesAbierto
                     inputProps={{ 'data-testid': 'movimientos-input-descripcion' }}
                 />
 
-                <TextField
-                    required
-                    margin="dense"
+                <ComboBox
                     label="Categoría"
-                    fullWidth
-                    variant="outlined"
-                    value={formData.categoria || ''}
-                    onChange={(e) => setField('categoria', e.target.value)}
-                    error={!!errors?.categoria}
-                    helperText={errors?.categoria ? errors.categoria[0] : 'Ej: Arriendo, Alimentación, Salud'}
                     sx={{ mt: 2 }}
-                    id="movimientos-input-categoria"
-                    inputProps={{ 'data-testid': 'movimientos-input-categoria' }}
+                    options={categorias.map((c) => ({ value: c.id, label: c.nombre, color: c.color }))}
+                    value={formData.categoria_id || ''}
+                    onChange={(v) => setField('categoria_id', v)}
+                    error={errors?.categoria_id?.[0]}
+                    testId="movimientos-select-categoria"
+                    renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                            <Box
+                                sx={{
+                                    width: 10,
+                                    height: 10,
+                                    borderRadius: '50%',
+                                    backgroundColor: option.color || '#9E9E9E',
+                                    flexShrink: 0,
+                                    mr: 1,
+                                }}
+                            />
+                            {option.label}
+                        </Box>
+                    )}
                 />
             </DialogContent>
             <DialogActions>
@@ -166,7 +177,7 @@ export default function MovimientoDialog({ dialogState, cuentas = [], mesAbierto
                         monto: parseFloat(data.monto) || 0,
                         fecha: data.fecha,
                         descripcion: data.descripcion,
-                        categoria: data.categoria,
+                        categoria_id: data.categoria_id ? parseInt(data.categoria_id) : null,
                     }))}
                     variant="contained"
                     disabled={saving || !mesAbierto}

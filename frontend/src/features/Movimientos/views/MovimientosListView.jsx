@@ -9,8 +9,6 @@ import {
     Box,
     Button,
     Chip,
-    Autocomplete,
-    TextField,
     Tooltip,
     Typography,
     Paper,
@@ -36,7 +34,8 @@ import { formatearFecha } from '../../../shared/utils/formatearFecha';
  * @param {Function} props.onCuentaFilterChange
  * @param {string} props.tipoFilter - Filtro de tipo actual
  * @param {Function} props.onTipoFilterChange
- * @param {string} props.categoriaFilter - Filtro de categoría actual
+ * @param {Array} props.categorias - Lista plana de categorías activas
+ * @param {string} props.categoriaFilter - Filtro de categoria_id actual
  * @param {Function} props.onCategoriaFilterChange
  * @param {Function} props.onNew - Callback nuevo movimiento
  * @param {Function} props.onEdit - Callback editar
@@ -48,6 +47,7 @@ import { formatearFecha } from '../../../shared/utils/formatearFecha';
 export default function MovimientosListView({
     listHook,
     cuentas = [],
+    categorias = [],
     cuentaFilter,
     onCuentaFilterChange,
     tipoFilter,
@@ -69,7 +69,17 @@ export default function MovimientosListView({
             render: (row) => formatearFecha(row.fecha),
         },
         { label: 'Descripción', key: 'descripcion' },
-        { label: 'Categoría', key: 'categoria', hideOnMobile: true },
+        {
+            label: 'Categoría',
+            key: 'categoria',
+            hideOnMobile: true,
+            render: (row) => row.categoria ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: row.categoria.color || '#9E9E9E', flexShrink: 0 }} />
+                    <Typography variant="body2">{row.categoria.nombre}</Typography>
+                </Box>
+            ) : '-',
+        },
         {
             label: 'Cuenta',
             key: 'cuenta',
@@ -135,20 +145,21 @@ export default function MovimientosListView({
                 testId="movimientos-select-filtro-tipo"
             />
 
-            <Autocomplete
-                freeSolo
+            <ComboBox
+                label="Categoría"
                 size="small"
-                options={[]}
-                inputValue={categoriaFilter}
-                onInputChange={(_, val) => onCategoriaFilterChange(val)}
+                placeholder="Todas"
+                fullWidth={false}
                 sx={{ width: { xs: '100%', sm: 190 } }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Categoría"
-                        placeholder="Escribir para filtrar..."
-                        inputProps={{ ...params.inputProps, 'data-testid': 'movimientos-select-filtro-categoria' }}
-                    />
+                options={categorias.map((c) => ({ value: c.id, label: c.nombre, color: c.color }))}
+                value={categoriaFilter}
+                onChange={onCategoriaFilterChange}
+                testId="movimientos-select-filtro-categoria"
+                renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                        <Box sx={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: option.color || '#9E9E9E', flexShrink: 0, mr: 1 }} />
+                        {option.label}
+                    </Box>
                 )}
             />
         </>

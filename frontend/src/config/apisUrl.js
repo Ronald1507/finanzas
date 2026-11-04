@@ -5,6 +5,10 @@
  * @module config/apisUrl
  */
 export const API_URLS = {
+    // GestionCategorias
+    CATEGORIAS: '/categorias',
+    CATEGORIAS_BY_ID: (id) => `/categorias/${id}`,
+
     // GestionCuentas
     CUENTAS: '/cuentas',
     CUENTAS_BY_ID: (id) => `/cuentas/${id}`,

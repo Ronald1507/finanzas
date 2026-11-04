@@ -26,6 +26,9 @@ const PendientesModule = React.lazy(() =>
 const MesesModule = React.lazy(() =>
     import('../features/CierreMensual/MesesModule')
 );
+const CategoriasModule = React.lazy(() =>
+    import('../features/GestionCategorias/CategoriasModule')
+);
 
 /**
  * Fallback de carga mientras se resuelve el lazy load.
@@ -56,6 +59,7 @@ export default function AppRoutes() {
                     <Route path={APP_CONFIG.ROUTES.MOVIMIENTOS} element={<MovimientosModule />} />
                     <Route path={APP_CONFIG.ROUTES.PENDIENTES} element={<PendientesModule />} />
                     <Route path={APP_CONFIG.ROUTES.MESES} element={<MesesModule />} />
+                    <Route path={APP_CONFIG.ROUTES.CATEGORIAS} element={<CategoriasModule />} />
                     <Route path="*" element={<Navigate to={APP_CONFIG.ROUTES.DASHBOARD} replace />} />
                 </Routes>
             </Suspense>

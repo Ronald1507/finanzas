@@ -30,6 +30,7 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import LockIcon from '@mui/icons-material/Lock';
 import LabelIcon from '@mui/icons-material/Label';
 import SavingsIcon from '@mui/icons-material/Savings';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import { APP_CONFIG } from '../../config/app.config';
 
 const DRAWER_WIDTH = 240;
@@ -42,6 +43,7 @@ const NAV_ITEMS = [
     { label: 'Cierre Mensual', path: APP_CONFIG.ROUTES.MESES, icon: <LockIcon /> },
     { label: 'Categorías', path: APP_CONFIG.ROUTES.CATEGORIAS, icon: <LabelIcon /> },
     { label: 'Presupuestos', path: APP_CONFIG.ROUTES.PRESUPUESTOS, icon: <SavingsIcon /> },
+    { label: 'Reportes', path: APP_CONFIG.ROUTES.REPORTES, icon: <BarChartIcon /> },
 ];
 
 /**

@@ -32,6 +32,9 @@ const CategoriasModule = React.lazy(() =>
 const PresupuestosModule = React.lazy(() =>
     import('../features/Presupuestos/PresupuestosModule')
 );
+const ReportesModule = React.lazy(() =>
+    import('../features/Reportes/ReportesModule')
+);
 
 /**
  * Fallback de carga mientras se resuelve el lazy load.
@@ -64,6 +67,7 @@ export default function AppRoutes() {
                     <Route path={APP_CONFIG.ROUTES.MESES} element={<MesesModule />} />
                     <Route path={APP_CONFIG.ROUTES.CATEGORIAS} element={<CategoriasModule />} />
                     <Route path={APP_CONFIG.ROUTES.PRESUPUESTOS} element={<PresupuestosModule />} />
+                    <Route path={APP_CONFIG.ROUTES.REPORTES} element={<ReportesModule />} />
                     <Route path="*" element={<Navigate to={APP_CONFIG.ROUTES.DASHBOARD} replace />} />
                 </Routes>
             </Suspense>

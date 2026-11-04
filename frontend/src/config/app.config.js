@@ -24,5 +24,6 @@ export const APP_CONFIG = {
         MESES: '/meses',
         CATEGORIAS: '/categorias',
         PRESUPUESTOS: '/presupuestos',
+        REPORTES: '/reportes',
     },
 };

@@ -31,6 +31,11 @@ export const API_URLS = {
     PRESUPUESTOS: '/presupuestos',
     PRESUPUESTOS_BY_ID: (id) => `/presupuestos/${id}`,
 
+    // Reportes
+    REPORTES_RESUMEN_MENSUAL: '/reportes/resumen-mensual',
+    REPORTES_EVOLUCION_ANUAL: '/reportes/evolucion-anual',
+    REPORTES_GASTOS_CATEGORIA: '/reportes/gastos-categoria',
+
     // SaldosDashboard
     DASHBOARD: '/dashboard',
 

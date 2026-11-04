@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\PresupuestoService;
 use App\Services\SaldoService;
 use App\Utils\ResponseUtils;
 use App\Utils\ValidacionUtils;
@@ -18,25 +19,16 @@ use Illuminate\Http\Request;
  */
 class DashboardController extends Controller
 {
-    /**
-     * @param SaldoService  $saldoService
-     * @param ResponseUtils $response
-     */
     public function __construct(
-        protected SaldoService  $saldoService,
-        protected ResponseUtils $response,
+        protected SaldoService       $saldoService,
+        protected PresupuestoService $presupuestoService,
+        protected ResponseUtils      $response,
     ) {}
 
     /**
-     * Retorna los saldos del mes indicado.
+     * Retorna los saldos del mes indicado, incluyendo presupuestos con ejecutado.
      *
      * GET /api/dashboard?anio=&mes=
-     *
-     * Si el mes no existe devuelve {mes: null} para que el front ofrezca
-     * el CTA "Cerrar mes anterior" y lo inicialice.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -51,6 +43,10 @@ class DashboardController extends Controller
             );
 
             $data = $this->saldoService->getDashboard((int) $params['anio'], (int) $params['mes']);
+
+            if ($data['mes'] !== null) {
+                $data['presupuestos'] = $this->presupuestoService->listarConEjecutado($data['mes']['id']);
+            }
 
             return $this->response->successData($data);
         } catch (\Throwable $e) {

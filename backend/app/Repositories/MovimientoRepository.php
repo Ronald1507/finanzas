@@ -103,6 +103,23 @@ class MovimientoRepository
     }
 
     /**
+     * Suma de egresos por categoria_id en un mes (para cálculo de ejecutado en presupuestos).
+     *
+     * @param int $mesId
+     * @return \Illuminate\Support\Collection<int, object>  {categoria_id, ejecutado}
+     */
+    public function getEgresosPorCategoriaMes(int $mesId): \Illuminate\Support\Collection
+    {
+        return $this->model->newQuery()
+            ->selectRaw('categoria_id, SUM(monto) as ejecutado')
+            ->where('mes_id', $mesId)
+            ->where('tipo', 'egreso')
+            ->whereNotNull('categoria_id')
+            ->groupBy('categoria_id')
+            ->get();
+    }
+
+    /**
      * Retorna el total de ingresos y egresos agrupados por cuenta_id para un mes.
      *
      * @param int $mesId

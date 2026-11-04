@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MesController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\PendienteController;
+use App\Http\Controllers\PresupuestoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -92,6 +93,21 @@ Route::post('/pendientes/{id}/concretar', [PendienteController::class, 'concreta
 
 Route::post('/pendientes/{id}/anular', [PendienteController::class, 'anular'])
     ->name('pendientes.anular-pendiente');
+
+// ------------------------------------------------------------------
+// Presupuestos
+// ------------------------------------------------------------------
+Route::get('/presupuestos', [PresupuestoController::class, 'index'])
+    ->name('presupuestos.listar');
+
+Route::post('/presupuestos', [PresupuestoController::class, 'store'])
+    ->name('presupuestos.crear');
+
+Route::put('/presupuestos/{id}', [PresupuestoController::class, 'update'])
+    ->name('presupuestos.actualizar');
+
+Route::delete('/presupuestos/{id}', [PresupuestoController::class, 'destroy'])
+    ->name('presupuestos.eliminar');
 
 // ------------------------------------------------------------------
 // SaldosDashboard

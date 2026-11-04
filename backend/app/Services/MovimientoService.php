@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Repositories\MovimientoRepository;
-use App\Repositories\MesRepository;
+use App\Repositories\CategoriaRepository;
 use App\Repositories\CuentaRepository;
+use App\Repositories\MesRepository;
+use App\Repositories\MovimientoRepository;
 use App\Repositories\PendienteRepository;
 use App\Utils\ErrorsBag;
 use App\Utils\PermissionControl;
@@ -25,21 +26,14 @@ use Illuminate\Support\Facades\DB;
  */
 class MovimientoService
 {
-    /**
-     * @param MovimientoRepository $movimientoRepo
-     * @param MesRepository        $mesRepo
-     * @param CuentaRepository     $cuentaRepo
-     * @param PendienteRepository  $pendienteRepo
-     * @param ErrorsBag            $errors
-     * @param PermissionControl    $permissions
-     */
     public function __construct(
         protected MovimientoRepository $movimientoRepo,
-        protected MesRepository $mesRepo,
-        protected CuentaRepository $cuentaRepo,
-        protected PendienteRepository $pendienteRepo,
-        protected ErrorsBag $errors,
-        protected PermissionControl $permissions
+        protected MesRepository        $mesRepo,
+        protected CuentaRepository     $cuentaRepo,
+        protected PendienteRepository  $pendienteRepo,
+        protected CategoriaRepository  $categoriaRepo,
+        protected ErrorsBag            $errors,
+        protected PermissionControl    $permissions
     ) {}
 
     /**
@@ -56,7 +50,7 @@ class MovimientoService
     /**
      * Crea un movimiento en el mes derivado de la fecha.
      *
-     * @param array<string, mixed> $datos  cuenta_id, tipo, monto, fecha, descripcion, categoria
+     * @param array<string, mixed> $datos  cuenta_id, tipo, monto, fecha, descripcion, categoria_id
      * @param array<string, mixed> $requestPermisos
      * @return array<string, mixed>
      */
@@ -71,17 +65,19 @@ class MovimientoService
             $this->errors->throwFast('cuenta_id', 'La cuenta no existe o está inactiva', 422);
         }
 
+        $this->validarCategoriaId($datos['categoria_id'] ?? null);
+
         $movimiento = $this->movimientoRepo->create([
-            'cuenta_id'   => $datos['cuenta_id'],
-            'mes_id'      => $mesId,
-            'tipo'        => $datos['tipo'],
-            'monto'       => $datos['monto'],
-            'fecha'       => $datos['fecha'],
-            'descripcion' => $datos['descripcion'],
-            'categoria'   => $datos['categoria'],
+            'cuenta_id'    => $datos['cuenta_id'],
+            'mes_id'       => $mesId,
+            'tipo'         => $datos['tipo'],
+            'monto'        => $datos['monto'],
+            'fecha'        => $datos['fecha'],
+            'descripcion'  => $datos['descripcion'],
+            'categoria_id' => $datos['categoria_id'] ?? null,
         ]);
 
-        return $movimiento->toArray();
+        return $movimiento->fresh()->load('categoria')->toArray();
     }
 
     /**
@@ -121,17 +117,21 @@ class MovimientoService
             $this->errors->throwFast('cuenta_id', 'La cuenta no existe o está inactiva', 422);
         }
 
+        if (array_key_exists('categoria_id', $datos)) {
+            $this->validarCategoriaId($datos['categoria_id']);
+        }
+
         $this->movimientoRepo->update($movimiento, [
-            'cuenta_id'   => $datos['cuenta_id']   ?? $movimiento->cuenta_id,
-            'mes_id'      => $mesId,
-            'tipo'        => $datos['tipo']         ?? $movimiento->tipo,
-            'monto'       => $datos['monto']        ?? $movimiento->monto,
-            'fecha'       => $fechaNueva,
-            'descripcion' => $datos['descripcion']  ?? $movimiento->descripcion,
-            'categoria'   => $datos['categoria']    ?? $movimiento->categoria,
+            'cuenta_id'    => $datos['cuenta_id']    ?? $movimiento->cuenta_id,
+            'mes_id'       => $mesId,
+            'tipo'         => $datos['tipo']          ?? $movimiento->tipo,
+            'monto'        => $datos['monto']         ?? $movimiento->monto,
+            'fecha'        => $fechaNueva,
+            'descripcion'  => $datos['descripcion']   ?? $movimiento->descripcion,
+            'categoria_id' => array_key_exists('categoria_id', $datos) ? $datos['categoria_id'] : $movimiento->categoria_id,
         ]);
 
-        return $movimiento->fresh()->toArray();
+        return $movimiento->fresh()->load('categoria')->toArray();
     }
 
     /**
@@ -208,17 +208,17 @@ class MovimientoService
         $mesId = $this->derivarMesId($datos['fecha']);
 
         return DB::transaction(function () use ($datos, $mesId, $cuentaOrigen, $cuentaDestino) {
-            $descripcion = $datos['descripcion'] ?? 'Transferencia';
-            $categoria   = 'transferencia';
+            $descripcion  = $datos['descripcion'] ?? 'Transferencia';
+            $categoriaId  = $this->categoriaRepo->findPorNombreExacto('Transferencia')?->id;
 
             $egreso = $this->movimientoRepo->create([
-                'cuenta_id'   => $cuentaOrigen->id,
-                'mes_id'      => $mesId,
-                'tipo'        => 'egreso',
-                'monto'       => $datos['monto'],
-                'fecha'       => $datos['fecha'],
-                'descripcion' => $descripcion,
-                'categoria'   => $categoria,
+                'cuenta_id'    => $cuentaOrigen->id,
+                'mes_id'       => $mesId,
+                'tipo'         => 'egreso',
+                'monto'        => $datos['monto'],
+                'fecha'        => $datos['fecha'],
+                'descripcion'  => $descripcion,
+                'categoria_id' => $categoriaId,
             ]);
 
             $ingreso = $this->movimientoRepo->create([
@@ -228,7 +228,7 @@ class MovimientoService
                 'monto'                    => $datos['monto'],
                 'fecha'                    => $datos['fecha'],
                 'descripcion'              => $descripcion,
-                'categoria'               => $categoria,
+                'categoria_id'             => $categoriaId,
                 'movimiento_relacionado_id'=> $egreso->id,
             ]);
 
@@ -241,6 +241,18 @@ class MovimientoService
                 'ingreso' => $ingreso->fresh()->toArray(),
             ];
         });
+    }
+
+    private function validarCategoriaId(?int $categoriaId): void
+    {
+        if ($categoriaId === null) {
+            return;
+        }
+
+        $cat = $this->categoriaRepo->findCategoria($categoriaId);
+        if ($cat === null || !$cat->activa) {
+            $this->errors->throwFast('categoria_id', 'La categoría no existe o está inactiva', 422);
+        }
     }
 
     /**

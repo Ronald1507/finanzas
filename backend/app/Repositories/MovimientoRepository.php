@@ -51,15 +51,14 @@ class MovimientoRepository
             ->when(isset($params['mes_id']), fn($q) => $q->where('mes_id', $params['mes_id']))
             ->when(isset($params['cuenta_id']), fn($q) => $q->where('cuenta_id', $params['cuenta_id']))
             ->when(isset($params['tipo']), fn($q) => $q->where('tipo', $params['tipo']))
-            ->when(isset($params['categoria']), fn($q) => $q->where('categoria', $likeOp, '%' . $params['categoria'] . '%'))
+            ->when(isset($params['categoria_id']), fn($q) => $q->where('categoria_id', $params['categoria_id']))
             ->when(
                 isset($params['search']) && $params['search'] !== '',
                 fn($q) => $q->where(fn($sub) => $sub
                     ->where('descripcion', $likeOp, '%' . $params['search'] . '%')
-                    ->orWhere('categoria',  $likeOp, '%' . $params['search'] . '%')
                 )
             )
-            ->with(['cuenta', 'mes'])
+            ->with(['cuenta', 'mes', 'categoria'])
             ->orderByDesc('fecha')
             ->orderByDesc('id');
 

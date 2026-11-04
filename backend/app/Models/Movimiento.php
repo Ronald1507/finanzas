@@ -12,14 +12,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * movimiento_relacionado_id: FK autorreferencial para par de transferencia.
  * pendiente_id: FK a pendientes (movimiento nacido al concretar un pendiente).
  *
- * @property int    $id
- * @property int    $cuenta_id
- * @property int    $mes_id
- * @property string $tipo                  ingreso|egreso
- * @property float  $monto
- * @property string $fecha
- * @property string $descripcion
- * @property string $categoria
+ * @property int      $id
+ * @property int      $cuenta_id
+ * @property int      $mes_id
+ * @property int|null $categoria_id
+ * @property string   $tipo                  ingreso|egreso
+ * @property float    $monto
+ * @property string   $fecha
+ * @property string   $descripcion
  * @property int|null $pendiente_id
  * @property int|null $movimiento_relacionado_id
  * @package App\Models
@@ -33,11 +33,11 @@ class Movimiento extends Model
     protected $fillable = [
         'cuenta_id',
         'mes_id',
+        'categoria_id',
         'tipo',
         'monto',
         'fecha',
         'descripcion',
-        'categoria',
         'pendiente_id',
         'movimiento_relacionado_id',
     ];
@@ -66,6 +66,16 @@ class Movimiento extends Model
     public function mes(): BelongsTo
     {
         return $this->belongsTo(Mes::class, 'mes_id');
+    }
+
+    /**
+     * Categoría del movimiento.
+     *
+     * @return BelongsTo<Categoria, self>
+     */
+    public function categoria(): BelongsTo
+    {
+        return $this->belongsTo(Categoria::class, 'categoria_id');
     }
 
     /**

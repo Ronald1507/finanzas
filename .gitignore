@@ -2,9 +2,16 @@
 .DS_Store
 Thumbs.db
 
-# Docker production env file (contains secrets)
+# Env files (contienen credenciales o data sensible)
+.env
 .env.prod
 .env.production
+
+# Seeder con data personal real (generado desde ODS, no va al repo)
+backend/database/seeders/ImportOdsSeeder.php
+
+# Script de desarrollo para generar el seeder
+generate_seeder.py
 
 # Editor
 .idea/

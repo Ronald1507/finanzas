@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\CuentaController;
-use App\Http\Controllers\MovimientoController;
-use App\Http\Controllers\PendienteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MesController;
+use App\Http\Controllers\MovimientoController;
+use App\Http\Controllers\PendienteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,21 @@ use Illuminate\Support\Facades\Route;
 | Sin autenticación/Sanctum — app de un solo usuario.
 | Nombres de ruta en kebab-case.
 */
+
+// ------------------------------------------------------------------
+// Categorias
+// ------------------------------------------------------------------
+Route::get('/categorias', [CategoriaController::class, 'index'])
+    ->name('categorias.listar');
+
+Route::post('/categorias', [CategoriaController::class, 'store'])
+    ->name('categorias.crear');
+
+Route::put('/categorias/{id}', [CategoriaController::class, 'update'])
+    ->name('categorias.actualizar');
+
+Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])
+    ->name('categorias.eliminar');
 
 // ------------------------------------------------------------------
 // GestionCuentas

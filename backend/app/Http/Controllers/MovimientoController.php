@@ -40,15 +40,15 @@ class MovimientoController extends Controller
         try {
             $params = ValidacionUtils::validate(
                 [
-                    'mes_id'   => 'required|integer|min:1',
-                    'cuenta_id'=> 'nullable|integer|min:1|exists:cuentas,id',
-                    'tipo'     => 'nullable|string|in:ingreso,egreso',
-                    'categoria'=> 'nullable|string|max:255',
-                    'search'   => 'nullable|string|max:255',
-                    'page'     => 'nullable|integer|min:1',
-                    'per_page' => 'nullable|integer|min:1|max:100',
+                    'mes_id'      => 'required|integer|min:1',
+                    'cuenta_id'   => 'nullable|integer|min:1|exists:cuentas,id',
+                    'tipo'        => 'nullable|string|in:ingreso,egreso',
+                    'categoria_id'=> 'nullable|integer|min:1|exists:categorias,id',
+                    'search'      => 'nullable|string|max:255',
+                    'page'        => 'nullable|integer|min:1',
+                    'per_page'    => 'nullable|integer|min:1|max:100',
                 ],
-                $request->only(['mes_id', 'cuenta_id', 'tipo', 'categoria', 'search', 'page', 'per_page']),
+                $request->only(['mes_id', 'cuenta_id', 'tipo', 'categoria_id', 'search', 'page', 'per_page']),
                 onlyRules: true
             );
 
@@ -73,14 +73,14 @@ class MovimientoController extends Controller
         try {
             $datos = ValidacionUtils::validate(
                 [
-                    'cuenta_id'  => 'required|integer|min:1|exists:cuentas,id',
-                    'tipo'       => 'required|string|in:ingreso,egreso',
-                    'monto'      => 'required|numeric|min:0.01',
-                    'fecha'      => 'required|date|date_format:Y-m-d',
-                    'descripcion'=> 'required|string|max:500',
-                    'categoria'  => 'required|string|max:255',
+                    'cuenta_id'   => 'required|integer|min:1|exists:cuentas,id',
+                    'tipo'        => 'required|string|in:ingreso,egreso',
+                    'monto'       => 'required|numeric|min:0.01',
+                    'fecha'       => 'required|date|date_format:Y-m-d',
+                    'descripcion' => 'required|string|max:500',
+                    'categoria_id'=> 'nullable|integer|min:1|exists:categorias,id',
                 ],
-                $request->only(['cuenta_id', 'tipo', 'monto', 'fecha', 'descripcion', 'categoria']),
+                $request->only(['cuenta_id', 'tipo', 'monto', 'fecha', 'descripcion', 'categoria_id']),
                 onlyRules: true
             );
 
@@ -106,14 +106,14 @@ class MovimientoController extends Controller
         try {
             $datos = ValidacionUtils::validate(
                 [
-                    'cuenta_id'  => 'nullable|integer|min:1|exists:cuentas,id',
-                    'tipo'       => 'nullable|string|in:ingreso,egreso',
-                    'monto'      => 'nullable|numeric|min:0.01',
-                    'fecha'      => 'nullable|date|date_format:Y-m-d',
-                    'descripcion'=> 'nullable|string|max:500',
-                    'categoria'  => 'nullable|string|max:255',
+                    'cuenta_id'   => 'nullable|integer|min:1|exists:cuentas,id',
+                    'tipo'        => 'nullable|string|in:ingreso,egreso',
+                    'monto'       => 'nullable|numeric|min:0.01',
+                    'fecha'       => 'nullable|date|date_format:Y-m-d',
+                    'descripcion' => 'nullable|string|max:500',
+                    'categoria_id'=> 'nullable|integer|min:1|exists:categorias,id',
                 ],
-                $request->only(['cuenta_id', 'tipo', 'monto', 'fecha', 'descripcion', 'categoria']),
+                $request->only(['cuenta_id', 'tipo', 'monto', 'fecha', 'descripcion', 'categoria_id']),
                 onlyRules: true
             );
 

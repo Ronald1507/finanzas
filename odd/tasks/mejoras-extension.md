@@ -168,14 +168,14 @@ Tres vistas en un módulo `Reportes` con tabs o secciones:
 | T1 | Migraciones categorías + data migration movimientos | S1 | inline | [x] | 188ff6c |
 | T2 | Backend CSR Categorías + actualizar MovimientoService | S1 | inline | [x] | 188ff6c |
 | T3 | Frontend módulo Categorías + MovimientoDialog actualizado | S2 | inline | [x] | 5663bb5 |
-| T4 | Migración observacion en movimientos + backend + frontend | S3 | inline | [ ] | — |
-| T5 | Migración cuotas en pendientes + backend + frontend | S4 | inline | [ ] | — |
-| T6 | Backend búsqueda global | S5 | inline | [ ] | — |
-| T7 | Frontend búsqueda global | S5 | inline | [ ] | — |
-| T8 | Migraciones + backend CSR Presupuestos + dashboard update | S6 | inline | [ ] | — |
-| T9 | Frontend módulo Presupuestos + widget Dashboard | S7 | inline | [ ] | — |
-| T10 | Backend 3 endpoints Reportes | S8 | inline | [ ] | — |
-| T11 | Frontend módulo Reportes + recharts | S9 | inline | [ ] | — |
+| T4 | Migración observacion en movimientos + backend + frontend | S3 | inline | [x] | 60cdac7 |
+| T5 | Migración cuotas en pendientes + backend + frontend | S4 | inline | [x] | 20537c9 |
+| T6 | Backend búsqueda global | S5 | inline | [x] | 937acee |
+| T7 | Frontend búsqueda global | S5 | inline | [x] | 937acee |
+| T8 | Migraciones + backend CSR Presupuestos + dashboard update | S6 | inline | [x] | 32f093a |
+| T9 | Frontend módulo Presupuestos + widget Dashboard | S7 | inline | [x] | 32f093a |
+| T10 | Backend 3 endpoints Reportes | S8 | inline | [x] | b64eeb3 |
+| T11 | Frontend módulo Reportes + recharts | S9 | inline | [x] | 003903e |
 
 Orden de ejecución: T1 → T2 → T3 → T4 → T5 → T6 → T7 → T8 → T9 → T10 → T11
 

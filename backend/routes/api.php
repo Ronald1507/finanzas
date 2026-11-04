@@ -7,6 +7,7 @@ use App\Http\Controllers\MesController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\PendienteController;
 use App\Http\Controllers\PresupuestoController;
+use App\Http\Controllers\ReporteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -126,3 +127,15 @@ Route::post('/meses/{id}/cerrar', [MesController::class, 'cerrar'])
 
 Route::post('/meses/{id}/reabrir', [MesController::class, 'reabrir'])
     ->name('meses.reabrir-mes');
+
+// ------------------------------------------------------------------
+// Reportes
+// ------------------------------------------------------------------
+Route::get('/reportes/resumen-mensual', [ReporteController::class, 'resumenMensual'])
+    ->name('reportes.resumen-mensual');
+
+Route::get('/reportes/evolucion-anual', [ReporteController::class, 'evolucionAnual'])
+    ->name('reportes.evolucion-anual');
+
+Route::get('/reportes/gastos-categoria', [ReporteController::class, 'gastosPorCategoria'])
+    ->name('reportes.gastos-categoria');

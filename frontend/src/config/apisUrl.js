@@ -27,6 +27,10 @@ export const API_URLS = {
     PENDIENTES_CONCRETAR: (id) => `/pendientes/${id}/concretar`,
     PENDIENTES_ANULAR: (id) => `/pendientes/${id}/anular`,
 
+    // Presupuestos
+    PRESUPUESTOS: '/presupuestos',
+    PRESUPUESTOS_BY_ID: (id) => `/presupuestos/${id}`,
+
     // SaldosDashboard
     DASHBOARD: '/dashboard',
 

@@ -16,7 +16,7 @@ import DashboardView from './views/DashboardView';
  */
 export default function DashboardModule() {
     const mesSeleccionado = useMesStore((s) => s.mesSeleccionado);
-    const { mes, consolidado, cuentas, loading, error, mesSinDatos } = useDashboard();
+    const { mes, consolidado, cuentas, presupuestos, loading, error, mesSinDatos } = useDashboard();
 
     return (
         <Box>
@@ -24,6 +24,7 @@ export default function DashboardModule() {
                 mes={mes}
                 consolidado={consolidado}
                 cuentas={cuentas}
+                presupuestos={presupuestos}
                 loading={loading}
                 error={error}
                 mesSinDatos={mesSinDatos}

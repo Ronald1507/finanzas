@@ -26,6 +26,7 @@ export default function useDashboard() {
     const [mes, setMes] = useState(null);
     const [consolidado, setConsolidado] = useState(null);
     const [cuentas, setCuentas] = useState([]);
+    const [presupuestos, setPresupuestos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [mesSinDatos, setMesSinDatos] = useState(false);
@@ -39,6 +40,7 @@ export default function useDashboard() {
             setMes(null);
             setConsolidado(null);
             setCuentas([]);
+            setPresupuestos([]);
             return;
         }
 
@@ -55,11 +57,13 @@ export default function useDashboard() {
                     setMes(null);
                     setConsolidado(null);
                     setCuentas([]);
+                    setPresupuestos([]);
                 } else {
                     setMesSinDatos(false);
                     setMes(data.mes);
                     setConsolidado(data.consolidado || null);
                     setCuentas(data.cuentas || []);
+                    setPresupuestos(data.presupuestos || []);
                 }
             }
         } catch (err) {
@@ -78,6 +82,7 @@ export default function useDashboard() {
         mes,
         consolidado,
         cuentas,
+        presupuestos,
         loading,
         error,
         refresh: cargar,

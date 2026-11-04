@@ -56,7 +56,10 @@ Route::post('/cuentas/{id}/desactivar', [CuentaController::class, 'desactivar'])
 // ------------------------------------------------------------------
 // Movimientos
 // ------------------------------------------------------------------
-// transferencia debe ir ANTES de /{id} para que no interprete "transferencia" como un ID
+// rutas estáticas ANTES de /{id}
+Route::get('/movimientos/buscar', [MovimientoController::class, 'buscar'])
+    ->name('movimientos.buscar-global');
+
 Route::post('/movimientos/transferencia', [MovimientoController::class, 'transferencia'])
     ->name('movimientos.crear-transferencia');
 

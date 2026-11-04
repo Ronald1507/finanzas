@@ -73,6 +73,36 @@ class MovimientoRepository
     }
 
     /**
+     * Búsqueda global cross-mes con filtros opcionales.
+     *
+     * @param array<string, mixed> $params  q?, categoria_id?, tipo?, cuenta_id?, fecha_desde?, fecha_hasta?, page?, per_page?
+     * @return array{data: array<int, mixed>, meta: array<string, int>}
+     */
+    public function buscarGlobal(array $params): array
+    {
+        $likeOp = $this->model->getConnection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'LIKE';
+
+        $query = $this->model->newQuery()
+            ->when(
+                isset($params['q']) && $params['q'] !== '',
+                fn($q) => $q->where(fn($sub) => $sub
+                    ->where('descripcion', $likeOp, '%' . $params['q'] . '%')
+                    ->orWhere('observacion', $likeOp, '%' . $params['q'] . '%')
+                )
+            )
+            ->when(isset($params['categoria_id']), fn($q) => $q->where('categoria_id', $params['categoria_id']))
+            ->when(isset($params['tipo']), fn($q) => $q->where('tipo', $params['tipo']))
+            ->when(isset($params['cuenta_id']), fn($q) => $q->where('cuenta_id', $params['cuenta_id']))
+            ->when(isset($params['fecha_desde']), fn($q) => $q->where('fecha', '>=', $params['fecha_desde']))
+            ->when(isset($params['fecha_hasta']), fn($q) => $q->where('fecha', '<=', $params['fecha_hasta']))
+            ->with(['cuenta', 'mes', 'categoria'])
+            ->orderByDesc('fecha')
+            ->orderByDesc('id');
+
+        return $this->pagination->paginar($query, $params, null, null, [], 50);
+    }
+
+    /**
      * Retorna el total de ingresos y egresos agrupados por cuenta_id para un mes.
      *
      * @param int $mesId

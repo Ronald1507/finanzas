@@ -147,6 +147,40 @@ class MovimientoController extends Controller
     }
 
     /**
+     * Búsqueda global de movimientos (sin restricción de mes).
+     *
+     * GET /api/movimientos/buscar
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function buscar(Request $request): JsonResponse
+    {
+        try {
+            $params = ValidacionUtils::validate(
+                [
+                    'q'            => 'nullable|string|max:255',
+                    'categoria_id' => 'nullable|integer|min:1|exists:categorias,id',
+                    'tipo'         => 'nullable|string|in:ingreso,egreso',
+                    'cuenta_id'    => 'nullable|integer|min:1|exists:cuentas,id',
+                    'fecha_desde'  => 'nullable|date|date_format:Y-m-d',
+                    'fecha_hasta'  => 'nullable|date|date_format:Y-m-d',
+                    'page'         => 'nullable|integer|min:1',
+                    'per_page'     => 'nullable|integer|min:1|max:100',
+                ],
+                $request->only(['q', 'categoria_id', 'tipo', 'cuenta_id', 'fecha_desde', 'fecha_hasta', 'page', 'per_page']),
+                onlyRules: true
+            );
+
+            $data = $this->movimientoService->buscarGlobal($params);
+
+            return $this->response->successData($data);
+        } catch (\Throwable $e) {
+            return $this->response->errorFromException($e, null, __LINE__, __FILE__);
+        }
+    }
+
+    /**
      * Crea una transferencia entre dos cuentas.
      *
      * POST /api/movimientos/transferencia

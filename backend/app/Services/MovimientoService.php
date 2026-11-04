@@ -48,6 +48,17 @@ class MovimientoService
     }
 
     /**
+     * Búsqueda global cross-mes con filtros opcionales.
+     *
+     * @param array<string, mixed> $params
+     * @return array{data: array<int, mixed>, meta: array<string, int>}
+     */
+    public function buscarGlobal(array $params): array
+    {
+        return $this->movimientoRepo->buscarGlobal($params);
+    }
+
+    /**
      * Crea un movimiento en el mes derivado de la fecha.
      *
      * @param array<string, mixed> $datos  cuenta_id, tipo, monto, fecha, descripcion, categoria_id

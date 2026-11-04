@@ -16,6 +16,7 @@ import {
     Skeleton,
 } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import NoteIcon from '@mui/icons-material/Note';
 import ComboBox from '../../../shared/components/ComboBox';
 import PageHeader from '../../../shared/components/PageHeader';
 import FilterToolbar from '../../../shared/components/FilterToolbar';
@@ -68,7 +69,20 @@ export default function MovimientosListView({
             key: 'fecha',
             render: (row) => formatearFecha(row.fecha),
         },
-        { label: 'Descripción', key: 'descripcion' },
+        {
+            label: 'Descripción',
+            key: 'descripcion',
+            render: (row) => (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="body2">{row.descripcion}</Typography>
+                    {row.observacion && (
+                        <Tooltip title={row.observacion}>
+                            <NoteIcon fontSize="small" color="action" sx={{ flexShrink: 0 }} />
+                        </Tooltip>
+                    )}
+                </Box>
+            ),
+        },
         {
             label: 'Categoría',
             key: 'categoria',

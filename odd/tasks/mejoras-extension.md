@@ -165,9 +165,9 @@ Tres vistas en un módulo `Reportes` con tabs o secciones:
 
 | ID | Descripción | Specs | Ruta | Estado | Commit |
 |----|-------------|-------|------|--------|--------|
-| T1 | Migraciones categorías + data migration movimientos | S1 | inline | [ ] | — |
-| T2 | Backend CSR Categorías + actualizar MovimientoService | S1 | inline | [ ] | — |
-| T3 | Frontend módulo Categorías + MovimientoDialog actualizado | S2 | inline | [ ] | — |
+| T1 | Migraciones categorías + data migration movimientos | S1 | inline | [x] | 188ff6c |
+| T2 | Backend CSR Categorías + actualizar MovimientoService | S1 | inline | [x] | 188ff6c |
+| T3 | Frontend módulo Categorías + MovimientoDialog actualizado | S2 | inline | [x] | 5663bb5 |
 | T4 | Migración observacion en movimientos + backend + frontend | S3 | inline | [ ] | — |
 | T5 | Migración cuotas en pendientes + backend + frontend | S4 | inline | [ ] | — |
 | T6 | Backend búsqueda global | S5 | inline | [ ] | — |

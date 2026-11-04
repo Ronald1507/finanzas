@@ -74,6 +74,7 @@ class MovimientoService
             'monto'        => $datos['monto'],
             'fecha'        => $datos['fecha'],
             'descripcion'  => $datos['descripcion'],
+            'observacion'  => $datos['observacion'] ?? null,
             'categoria_id' => $datos['categoria_id'] ?? null,
         ]);
 
@@ -128,6 +129,7 @@ class MovimientoService
             'monto'        => $datos['monto']         ?? $movimiento->monto,
             'fecha'        => $fechaNueva,
             'descripcion'  => $datos['descripcion']   ?? $movimiento->descripcion,
+            'observacion'  => array_key_exists('observacion', $datos) ? $datos['observacion'] : $movimiento->observacion,
             'categoria_id' => array_key_exists('categoria_id', $datos) ? $datos['categoria_id'] : $movimiento->categoria_id,
         ]);
 

@@ -136,6 +136,21 @@ export default function MovimientoDialog({ dialogState, cuentas = [], categorias
                     inputProps={{ 'data-testid': 'movimientos-input-descripcion' }}
                 />
 
+                <TextField
+                    margin="dense"
+                    label="Observación"
+                    fullWidth
+                    multiline
+                    minRows={2}
+                    variant="outlined"
+                    value={formData.observacion || ''}
+                    onChange={(e) => setField('observacion', e.target.value)}
+                    error={!!errors?.observacion}
+                    helperText={errors?.observacion ? errors.observacion[0] : 'Notas adicionales...'}
+                    sx={{ mt: 2 }}
+                    inputProps={{ 'data-testid': 'movimientos-input-observacion' }}
+                />
+
                 <ComboBox
                     label="Categoría"
                     sx={{ mt: 2 }}
@@ -177,6 +192,7 @@ export default function MovimientoDialog({ dialogState, cuentas = [], categorias
                         monto: parseFloat(data.monto) || 0,
                         fecha: data.fecha,
                         descripcion: data.descripcion,
+                        observacion: data.observacion || null,
                         categoria_id: data.categoria_id ? parseInt(data.categoria_id) : null,
                     }))}
                     variant="contained"

@@ -55,7 +55,7 @@ export default function MovimientosModule() {
 
     const dialogState = useDialogState(
         movimientosService,
-        { cuenta_id: '', tipo: '', monto: '', fecha: hoyParaInput(), descripcion: '', categoria_id: '' },
+        { cuenta_id: '', tipo: '', monto: '', fecha: hoyParaInput(), descripcion: '', observacion: '', categoria_id: '' },
         {
             onSuccess: [() => { listHook.refresh(); dashboardHook.refresh(); }],
             validate: (data) => validateForm(data, {

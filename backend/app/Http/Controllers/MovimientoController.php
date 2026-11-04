@@ -78,9 +78,10 @@ class MovimientoController extends Controller
                     'monto'       => 'required|numeric|min:0.01',
                     'fecha'       => 'required|date|date_format:Y-m-d',
                     'descripcion' => 'required|string|max:500',
+                    'observacion' => 'nullable|string|max:2000',
                     'categoria_id'=> 'nullable|integer|min:1|exists:categorias,id',
                 ],
-                $request->only(['cuenta_id', 'tipo', 'monto', 'fecha', 'descripcion', 'categoria_id']),
+                $request->only(['cuenta_id', 'tipo', 'monto', 'fecha', 'descripcion', 'observacion', 'categoria_id']),
                 onlyRules: true
             );
 
@@ -111,9 +112,10 @@ class MovimientoController extends Controller
                     'monto'       => 'nullable|numeric|min:0.01',
                     'fecha'       => 'nullable|date|date_format:Y-m-d',
                     'descripcion' => 'nullable|string|max:500',
+                    'observacion' => 'nullable|string|max:2000',
                     'categoria_id'=> 'nullable|integer|min:1|exists:categorias,id',
                 ],
-                $request->only(['cuenta_id', 'tipo', 'monto', 'fecha', 'descripcion', 'categoria_id']),
+                $request->only(['cuenta_id', 'tipo', 'monto', 'fecha', 'descripcion', 'observacion', 'categoria_id']),
                 onlyRules: true
             );
 

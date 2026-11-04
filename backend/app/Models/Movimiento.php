@@ -38,6 +38,7 @@ class Movimiento extends Model
         'monto',
         'fecha',
         'descripcion',
+        'observacion',
         'pendiente_id',
         'movimiento_relacionado_id',
     ];

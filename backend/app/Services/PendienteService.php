@@ -72,11 +72,15 @@ class PendienteService
             $this->errors->throwFast('cuenta_id', 'La cuenta no existe o está inactiva', 422);
         }
 
+        $this->validarCuotas($datos['cuota_actual'] ?? null, $datos['cuota_total'] ?? null);
+
         $pendiente = $this->pendienteRepo->create([
             'cuenta_id'      => $datos['cuenta_id'],
             'mes_id'         => $mesAbierto->id,
             'tipo'           => $datos['tipo'],
             'monto'          => $datos['monto'],
+            'cuota_actual'   => $datos['cuota_actual'] ?? null,
+            'cuota_total'    => $datos['cuota_total'] ?? null,
             'descripcion'    => $datos['descripcion'],
             'fecha_estimada' => $datos['fecha_estimada'],
             'estado'         => 'pendiente',
@@ -121,16 +125,38 @@ class PendienteService
             $this->errors->throwFast('cuenta_id', 'La cuenta no existe o está inactiva', 422);
         }
 
+        $cuotaActual = array_key_exists('cuota_actual', $datos) ? $datos['cuota_actual'] : $pendiente->cuota_actual;
+        $cuotaTotal  = array_key_exists('cuota_total', $datos)  ? $datos['cuota_total']  : $pendiente->cuota_total;
+        $this->validarCuotas($cuotaActual, $cuotaTotal);
+
         $this->pendienteRepo->update($pendiente, [
             'cuenta_id'      => $datos['cuenta_id']      ?? $pendiente->cuenta_id,
             'tipo'           => $datos['tipo']            ?? $pendiente->tipo,
             'monto'          => $datos['monto']           ?? $pendiente->monto,
+            'cuota_actual'   => $cuotaActual,
+            'cuota_total'    => $cuotaTotal,
             'descripcion'    => $datos['descripcion']     ?? $pendiente->descripcion,
             'fecha_estimada' => $datos['fecha_estimada']  ?? $pendiente->fecha_estimada,
             'recurrente'     => $datos['recurrente']      ?? $pendiente->recurrente,
         ]);
 
         return $pendiente->fresh()->toArray();
+    }
+
+    private function validarCuotas(?int $cuotaActual, ?int $cuotaTotal): void
+    {
+        if ($cuotaActual === null && $cuotaTotal === null) {
+            return;
+        }
+        if ($cuotaActual === null || $cuotaTotal === null) {
+            $this->errors->throwFast('cuota_actual', 'Si se indica cuota, ambos campos (cuota actual y total) son requeridos', 422);
+        }
+        if ($cuotaTotal < 1) {
+            $this->errors->throwFast('cuota_total', 'El total de cuotas debe ser al menos 1', 422);
+        }
+        if ($cuotaActual < 1 || $cuotaActual > $cuotaTotal) {
+            $this->errors->throwFast('cuota_actual', 'La cuota actual debe estar entre 1 y el total de cuotas', 422);
+        }
     }
 
     /**

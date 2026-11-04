@@ -107,6 +107,14 @@ export default function PendientesListView({
             render: (row) => formatearMoneda(row.monto),
         },
         {
+            label: 'Cuotas',
+            key: 'cuota_actual',
+            hideOnMobile: true,
+            render: (row) => row.cuota_actual && row.cuota_total
+                ? `${row.cuota_actual}/${row.cuota_total}`
+                : '-',
+        },
+        {
             label: 'Fecha Estimada',
             key: 'fecha_estimada',
             hideOnMobile: true,

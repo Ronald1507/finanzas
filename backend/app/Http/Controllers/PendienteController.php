@@ -75,11 +75,13 @@ class PendienteController extends Controller
                     'cuenta_id'      => 'required|integer|min:1|exists:cuentas,id',
                     'tipo'           => 'required|string|in:por_pagar,por_recibir',
                     'monto'          => 'required|numeric|min:0.01',
+                    'cuota_actual'   => 'nullable|integer|min:1',
+                    'cuota_total'    => 'nullable|integer|min:1',
                     'descripcion'    => 'required|string|max:500',
                     'fecha_estimada' => 'required|date|date_format:Y-m-d',
                     'recurrente'     => 'nullable|boolean',
                 ],
-                $request->only(['cuenta_id', 'tipo', 'monto', 'descripcion', 'fecha_estimada', 'recurrente']),
+                $request->only(['cuenta_id', 'tipo', 'monto', 'cuota_actual', 'cuota_total', 'descripcion', 'fecha_estimada', 'recurrente']),
                 onlyRules: true
             );
 
@@ -108,11 +110,13 @@ class PendienteController extends Controller
                     'cuenta_id'      => 'nullable|integer|min:1|exists:cuentas,id',
                     'tipo'           => 'nullable|string|in:por_pagar,por_recibir',
                     'monto'          => 'nullable|numeric|min:0.01',
+                    'cuota_actual'   => 'nullable|integer|min:1',
+                    'cuota_total'    => 'nullable|integer|min:1',
                     'descripcion'    => 'nullable|string|max:500',
                     'fecha_estimada' => 'nullable|date|date_format:Y-m-d',
                     'recurrente'     => 'nullable|boolean',
                 ],
-                $request->only(['cuenta_id', 'tipo', 'monto', 'descripcion', 'fecha_estimada', 'recurrente']),
+                $request->only(['cuenta_id', 'tipo', 'monto', 'cuota_actual', 'cuota_total', 'descripcion', 'fecha_estimada', 'recurrente']),
                 onlyRules: true
             );
 

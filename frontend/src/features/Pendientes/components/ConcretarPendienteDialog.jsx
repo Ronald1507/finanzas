@@ -57,6 +57,9 @@ export default function ConcretarPendienteDialog({
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
                         <strong>{pendiente.descripcion}</strong> —
                         {pendiente.tipo === 'por_pagar' ? ' Por Pagar' : ' Por Recibir'}
+                        {pendiente.cuota_actual && pendiente.cuota_total
+                            ? ` · Cuota ${pendiente.cuota_actual} de ${pendiente.cuota_total}`
+                            : ''}
                     </Typography>
                 )}
                 {errors?.general && (

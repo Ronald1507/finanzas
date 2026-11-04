@@ -14,6 +14,8 @@ import {
     CircularProgress,
     Switch,
     FormControlLabel,
+    Box,
+    Typography,
 } from '@mui/material';
 import ComboBox from '../../../shared/components/ComboBox';
 
@@ -115,6 +117,34 @@ export default function PendienteDialog({ dialogState, cuentas = [] }) {
                     inputProps={{ 'data-testid': 'pendientes-input-fecha-estimada' }}
                 />
 
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="caption" color="text.secondary">Cuotas (opcional)</Typography>
+                    <Box sx={{ display: 'flex', gap: 2, mt: 0.5 }}>
+                        <TextField
+                            label="Cuota actual"
+                            type="number"
+                            fullWidth
+                            variant="outlined"
+                            value={formData.cuota_actual || ''}
+                            onChange={(e) => setField('cuota_actual', e.target.value ? parseInt(e.target.value) : '')}
+                            error={!!errors?.cuota_actual}
+                            helperText={errors?.cuota_actual ? errors.cuota_actual[0] : 'Ej: 3'}
+                            inputProps={{ min: 1, 'data-testid': 'pendientes-input-cuota-actual' }}
+                        />
+                        <TextField
+                            label="Total cuotas"
+                            type="number"
+                            fullWidth
+                            variant="outlined"
+                            value={formData.cuota_total || ''}
+                            onChange={(e) => setField('cuota_total', e.target.value ? parseInt(e.target.value) : '')}
+                            error={!!errors?.cuota_total}
+                            helperText={errors?.cuota_total ? errors.cuota_total[0] : 'Ej: 12'}
+                            inputProps={{ min: 1, 'data-testid': 'pendientes-input-cuota-total' }}
+                        />
+                    </Box>
+                </Box>
+
                 <FormControlLabel
                     sx={{ mt: 2, display: 'block' }}
                     control={
@@ -142,6 +172,8 @@ export default function PendienteDialog({ dialogState, cuentas = [] }) {
                         cuenta_id: data.cuenta_id ? parseInt(data.cuenta_id) : null,
                         tipo: data.tipo,
                         monto: parseFloat(data.monto) || 0,
+                        cuota_actual: data.cuota_actual ? parseInt(data.cuota_actual) : null,
+                        cuota_total: data.cuota_total ? parseInt(data.cuota_total) : null,
                         descripcion: data.descripcion,
                         fecha_estimada: data.fecha_estimada,
                         recurrente: !!data.recurrente,

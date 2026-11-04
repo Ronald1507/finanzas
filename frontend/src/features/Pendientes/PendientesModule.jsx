@@ -46,7 +46,7 @@ export default function PendientesModule() {
 
     const dialogState = useDialogState(
         pendientesService,
-        { cuenta_id: '', tipo: '', monto: '', descripcion: '', fecha_estimada: '', recurrente: false },
+        { cuenta_id: '', tipo: '', monto: '', cuota_actual: '', cuota_total: '', descripcion: '', fecha_estimada: '', recurrente: false },
         {
             onSuccess: [() => listHook.refresh()],
             validate: (data) => validateForm(data, {

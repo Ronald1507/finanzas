@@ -35,6 +35,8 @@ class Pendiente extends Model
         'mes_id',
         'tipo',
         'monto',
+        'cuota_actual',
+        'cuota_total',
         'descripcion',
         'fecha_estimada',
         'estado',

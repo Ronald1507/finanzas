@@ -41,8 +41,9 @@ services:
       - /var/www/html/vendor
     env_file: [.env]
     environment:
-      # Fijos en Docker — no se sobreescriben desde .env
+      # Fijos en Docker — sobreescriben los valores del .env
       DB_CONNECTION: pgsql
+      DB_HOST: db
       APP_ENV: local
       APP_DEBUG: "true"
       CACHE_STORE: file

@@ -30,7 +30,7 @@ RUN composer install --no-dev --no-scripts --no-autoloader
 COPY . .
 RUN composer dump-autoload --optimize --no-scripts
 
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN mkdir -p bootstrap/cache && chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]

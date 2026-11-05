@@ -1,19 +1,20 @@
 # ── Backend — deploy independiente en VPS ───────────────────────────────────
-# Levanta Laravel + PostgreSQL sin el frontend.
 #
-# Variables de entorno requeridas (definir en shell o en un archivo .env):
+# Modos de uso:
+#   Backend + BD en contenedor:   docker compose --profile with-db up -d
+#   Solo backend (BD externa):    docker compose up -d
+#   Solo BD:                      docker compose --profile with-db up -d db
+#
+# Variables de entorno requeridas:
 #   APP_KEY                 — php artisan key:generate --show
 #   DB_PASSWORD             — contraseña de PostgreSQL
 #   CORS_ALLOWED_ORIGINS    — URL del frontend (ej: https://app.tudominio.com)
 #
-# Opcionales (tienen valores por defecto):
+# Opcionales:
 #   APP_URL                 — URL pública del backend  (default: http://localhost:8000)
-#   DB_DATABASE             — nombre de la base de datos (default: finanzas)
-#   DB_USERNAME             — usuario de PostgreSQL      (default: finanzas)
-#
-# Uso:
-#   docker compose up -d
-#   docker compose logs -f backend
+#   DB_HOST                 — host de la BD            (default: db — el contenedor)
+#   DB_DATABASE             — nombre de la BD          (default: finanzas)
+#   DB_USERNAME             — usuario de PostgreSQL    (default: finanzas)
 
 services:
   backend:
@@ -22,17 +23,14 @@ services:
       target: prod
     ports:
       - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
       APP_KEY: ${APP_KEY}
       APP_URL: ${APP_URL:-http://localhost:8000}
       DB_CONNECTION: pgsql
-      DB_HOST: db
-      DB_PORT: 5432
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
       DB_DATABASE: ${DB_DATABASE:-finanzas}
       DB_USERNAME: ${DB_USERNAME:-finanzas}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -46,12 +44,15 @@ services:
 
   db:
     image: postgres:16-alpine
+    profiles: [with-db]
     environment:
       POSTGRES_DB: ${DB_DATABASE:-finanzas}
       POSTGRES_USER: ${DB_USERNAME:-finanzas}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-finanzas}"]

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\MesRepository;
 use App\Utils\ErrorsBag;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -34,6 +35,7 @@ class ReporteService
         $totales = DB::table('movimientos')
             ->selectRaw('tipo, SUM(monto) as total')
             ->where('mes_id', $mesId)
+            ->where('user_id', Auth::id())
             ->groupBy('tipo')
             ->pluck('total', 'tipo');
 
@@ -44,6 +46,7 @@ class ReporteService
             ->join('categorias', 'movimientos.categoria_id', '=', 'categorias.id')
             ->selectRaw('categorias.id, categorias.nombre, categorias.color, SUM(movimientos.monto) as monto')
             ->where('movimientos.mes_id', $mesId)
+            ->where('movimientos.user_id', Auth::id())
             ->where('movimientos.tipo', 'egreso')
             ->groupBy('categorias.id', 'categorias.nombre', 'categorias.color')
             ->orderByDesc('monto')
@@ -73,12 +76,13 @@ class ReporteService
      */
     public function evolucionAnual(int $anio): array
     {
-        $meses = DB::table('meses')->where('anio', $anio)->get()->keyBy('mes');
+        $meses = DB::table('meses')->where('anio', $anio)->where('user_id', Auth::id())->get()->keyBy('mes');
 
         $totalesMovs = DB::table('movimientos')
             ->join('meses', 'movimientos.mes_id', '=', 'meses.id')
             ->selectRaw('meses.mes, movimientos.tipo, SUM(movimientos.monto) as total')
             ->where('meses.anio', $anio)
+            ->where('meses.user_id', Auth::id())
             ->groupBy('meses.mes', 'movimientos.tipo')
             ->get()
             ->groupBy('mes');
@@ -87,6 +91,7 @@ class ReporteService
             ->join('meses', 'cuenta_mes.mes_id', '=', 'meses.id')
             ->selectRaw('meses.mes, SUM(cuenta_mes.saldo_inicial) as saldo_inicial, SUM(cuenta_mes.saldo_final) as saldo_final')
             ->where('meses.anio', $anio)
+            ->where('meses.user_id', Auth::id())
             ->groupBy('meses.mes')
             ->get()
             ->keyBy('mes');
@@ -133,10 +138,12 @@ class ReporteService
             ->where('movimientos.tipo', 'egreso');
 
         if ($mesId !== null) {
-            $query->where('movimientos.mes_id', $mesId);
+            $query->where('movimientos.mes_id', $mesId)
+                  ->where('movimientos.user_id', Auth::id());
         } else {
             $query->join('meses', 'movimientos.mes_id', '=', 'meses.id')
-                  ->where('meses.anio', $anio);
+                  ->where('meses.anio', $anio)
+                  ->where('meses.user_id', Auth::id());
         }
 
         $rows = $query

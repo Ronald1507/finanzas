@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Cuenta;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Repositorio para la entidad Cuenta.
@@ -29,7 +30,7 @@ class CuentaRepository
      */
     public function findCuenta(int $id): ?Cuenta
     {
-        return $this->model->newQuery()->find($id);
+        return $this->model->newQuery()->where('user_id', Auth::id())->find($id);
     }
 
     /**
@@ -42,6 +43,7 @@ class CuentaRepository
     public function findCuentaActivaPorNombre(string $nombre, ?int $exceptId = null): ?Cuenta
     {
         $query = $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->where('nombre', $nombre)
             ->where('activa', true);
 
@@ -60,7 +62,7 @@ class CuentaRepository
      */
     public function getCuentas(?bool $activa = null): Collection
     {
-        $query = $this->model->newQuery()->orderBy('nombre');
+        $query = $this->model->newQuery()->where('user_id', Auth::id())->orderBy('nombre');
 
         if ($activa !== null) {
             $query->where('activa', $activa);
@@ -77,6 +79,7 @@ class CuentaRepository
     public function getCuentasActivas(): Collection
     {
         return $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->where('activa', true)
             ->orderBy('nombre')
             ->get();
@@ -90,6 +93,7 @@ class CuentaRepository
      */
     public function create(array $datos): Cuenta
     {
+        $datos['user_id'] = Auth::id();
         return $this->model->newQuery()->create($datos);
     }
 

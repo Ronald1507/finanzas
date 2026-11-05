@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Movimiento;
 use App\Utils\PaginationUtils;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Repositorio para la entidad Movimiento.
@@ -32,7 +33,7 @@ class MovimientoRepository
      */
     public function findMovimiento(int $id): ?Movimiento
     {
-        return $this->model->newQuery()->find($id);
+        return $this->model->newQuery()->where('user_id', Auth::id())->find($id);
     }
 
     /**
@@ -48,6 +49,7 @@ class MovimientoRepository
         $likeOp = $this->model->getConnection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'LIKE';
 
         $query = $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->when(isset($params['mes_id']), fn($q) => $q->where('mes_id', $params['mes_id']))
             ->when(isset($params['cuenta_id']), fn($q) => $q->where('cuenta_id', $params['cuenta_id']))
             ->when(isset($params['tipo']), fn($q) => $q->where('tipo', $params['tipo']))
@@ -83,6 +85,7 @@ class MovimientoRepository
         $likeOp = $this->model->getConnection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'LIKE';
 
         $query = $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->when(
                 isset($params['q']) && $params['q'] !== '',
                 fn($q) => $q->where(fn($sub) => $sub
@@ -144,6 +147,7 @@ class MovimientoRepository
      */
     public function create(array $datos): Movimiento
     {
+        $datos['user_id'] = Auth::id();
         return $this->model->newQuery()->create($datos);
     }
 

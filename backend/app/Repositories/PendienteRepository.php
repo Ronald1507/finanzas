@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Pendiente;
 use App\Utils\PaginationUtils;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Repositorio para la entidad Pendiente.
@@ -32,7 +33,7 @@ class PendienteRepository
      */
     public function findPendiente(int $id): ?Pendiente
     {
-        return $this->model->newQuery()->find($id);
+        return $this->model->newQuery()->where('user_id', Auth::id())->find($id);
     }
 
     /**
@@ -46,6 +47,7 @@ class PendienteRepository
     public function paginatePorMes(array $params): array
     {
         $query = $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->where('mes_id', $params['mes_id'])
             ->when(isset($params['tipo']),       fn($q) => $q->where('tipo',       $params['tipo']))
             ->when(isset($params['estado']),     fn($q) => $q->where('estado',     $params['estado']))
@@ -70,6 +72,7 @@ class PendienteRepository
     public function getPorMes(int $mesId, ?string $tipo = null, ?string $estado = null, ?bool $recurrente = null): Collection
     {
         return $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->where('mes_id', $mesId)
             ->when($tipo !== null,       fn($q) => $q->where('tipo',       $tipo))
             ->when($estado !== null,     fn($q) => $q->where('estado',     $estado))
@@ -90,6 +93,7 @@ class PendienteRepository
     public function getClonablesPorCierre(int $mesId): Collection
     {
         return $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->where('mes_id', $mesId)
             ->where(function ($q) {
                 $q->where('recurrente', true)
@@ -112,6 +116,7 @@ class PendienteRepository
     public function getPendientesAbiertosPorCuentaYMes(int $cuentaId, int $mesId): Collection
     {
         return $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->where('cuenta_id', $cuentaId)
             ->where('mes_id', $mesId)
             ->where('estado', 'pendiente')
@@ -132,6 +137,7 @@ class PendienteRepository
             ->selectRaw('cuenta_id,
                 SUM(CASE WHEN tipo = ? THEN monto ELSE 0 END) as total_por_pagar,
                 SUM(CASE WHEN tipo = ? THEN monto ELSE 0 END) as total_por_recibir', ['por_pagar', 'por_recibir'])
+            ->where('user_id', Auth::id())
             ->where('mes_id', $mesId)
             ->where('estado', 'pendiente')
             ->groupBy('cuenta_id')
@@ -164,6 +170,8 @@ class PendienteRepository
         if (empty($rows)) {
             return;
         }
+        $userId = Auth::id();
+        $rows = array_map(fn($r) => array_merge($r, ['user_id' => $userId]), $rows);
         $this->model->newQuery()->insert($rows);
     }
 
@@ -195,6 +203,7 @@ class PendienteRepository
      */
     public function create(array $datos): Pendiente
     {
+        $datos['user_id'] = Auth::id();
         return $this->model->newQuery()->create($datos);
     }
 

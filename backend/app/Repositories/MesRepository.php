@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Mes;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Repositorio para la entidad Mes.
@@ -29,7 +30,7 @@ class MesRepository
      */
     public function findMes(int $id): ?Mes
     {
-        return $this->model->newQuery()->find($id);
+        return $this->model->newQuery()->where('user_id', Auth::id())->find($id);
     }
 
     /**
@@ -39,7 +40,7 @@ class MesRepository
      */
     public function findUltimoMes(): ?Mes
     {
-        return $this->model->newQuery()->orderByDesc('anio')->orderByDesc('mes')->first();
+        return $this->model->newQuery()->where('user_id', Auth::id())->orderByDesc('anio')->orderByDesc('mes')->first();
     }
 
     /**
@@ -52,6 +53,7 @@ class MesRepository
     public function findMesPorAnioMes(int $anio, int $mes): ?Mes
     {
         return $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->where('anio', $anio)
             ->where('mes', $mes)
             ->first();
@@ -65,6 +67,7 @@ class MesRepository
     public function findMesAbierto(): ?Mes
     {
         return $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->where('estado', 'abierto')
             ->first();
     }
@@ -77,6 +80,7 @@ class MesRepository
     public function getMeses(): Collection
     {
         return $this->model->newQuery()
+            ->where('user_id', Auth::id())
             ->orderBy('anio')
             ->orderBy('mes')
             ->get();
@@ -90,6 +94,7 @@ class MesRepository
      */
     public function create(array $datos): Mes
     {
+        $datos['user_id'] = Auth::id();
         return $this->model->newQuery()->create($datos);
     }
 

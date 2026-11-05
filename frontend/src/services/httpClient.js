@@ -23,7 +23,7 @@ httpClient.interceptors.request.use((config) => {
 httpClient.interceptors.response.use(
     (response) => mapSuccessResponse(response.data),
     (error) => {
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 && useAuthStore.getState().token) {
             useAuthStore.getState().logout();
             window.location.href = '/login';
         }

@@ -17,6 +17,8 @@ export const APP_CONFIG = {
     // Rutas de la SPA
     ROUTES: {
         HOME: '/',
+        LOGIN: '/login',
+        REGISTER: '/register',
         DASHBOARD: '/dashboard',
         CUENTAS: '/cuentas',
         MOVIMIENTOS: '/movimientos',

@@ -31,7 +31,10 @@ import LockIcon from '@mui/icons-material/Lock';
 import LabelIcon from '@mui/icons-material/Label';
 import SavingsIcon from '@mui/icons-material/Savings';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { APP_CONFIG } from '../../config/app.config';
+import useAuthStore from '../hooks/useAuthStore';
+import { authService } from '../../features/Auth/services/authService';
 
 const DRAWER_WIDTH = 240;
 
@@ -54,19 +57,27 @@ const NAV_ITEMS = [
  * @returns {JSX.Element}
  */
 export default function AppLayout({ children }) {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const navigate   = useNavigate();
+    const location   = useLocation();
+    const theme      = useTheme();
+    const isMobile   = useMediaQuery(theme.breakpoints.down('md'));
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const user       = useAuthStore((s) => s.user);
+    const storeLogout = useAuthStore((s) => s.logout);
 
     const handleNavigation = (path) => {
         navigate(path);
         if (isMobile) setDrawerOpen(false);
     };
 
+    const handleLogout = async () => {
+        try { await authService.logout(); } catch (_) { /* token already invalid */ }
+        storeLogout();
+        navigate(APP_CONFIG.ROUTES.LOGIN, { replace: true });
+    };
+
     const drawerContent = (
-        <Box sx={{ width: DRAWER_WIDTH }}>
+        <Box sx={{ width: DRAWER_WIDTH, display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Toolbar sx={{ gap: 1.5, px: 2.5 }}>
                 <Box
                     sx={{
@@ -128,6 +139,16 @@ export default function AppLayout({ children }) {
                     );
                 })}
             </List>
+            <Divider sx={{ mt: 'auto' }} />
+            <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                    <Typography variant="body2" noWrap fontWeight={600}>{user?.name ?? '—'}</Typography>
+                    <Typography variant="caption" noWrap color="text.secondary">{user?.email ?? ''}</Typography>
+                </Box>
+                <IconButton size="small" onClick={handleLogout} title="Cerrar sesión">
+                    <LogoutIcon fontSize="small" />
+                </IconButton>
+            </Box>
         </Box>
     );
 

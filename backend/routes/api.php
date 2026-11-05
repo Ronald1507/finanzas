@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\CuentaController;
 use App\Http\Controllers\DashboardController;
@@ -15,127 +16,142 @@ use Illuminate\Support\Facades\Route;
 | API Routes — Finanzas Personales
 |--------------------------------------------------------------------------
 | Prefijo global: /api (configurado en bootstrap/app.php)
-| Sin autenticación/Sanctum — app de un solo usuario.
 | Nombres de ruta en kebab-case.
 */
 
 // ------------------------------------------------------------------
-// Categorias
+// Auth (público — sin token)
 // ------------------------------------------------------------------
-Route::get('/categorias', [CategoriaController::class, 'index'])
-    ->name('categorias.listar');
-
-Route::post('/categorias', [CategoriaController::class, 'store'])
-    ->name('categorias.crear');
-
-Route::put('/categorias/{id}', [CategoriaController::class, 'update'])
-    ->name('categorias.actualizar');
-
-Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])
-    ->name('categorias.eliminar');
+Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+Route::post('/login',    [AuthController::class, 'login'])->name('auth.login');
 
 // ------------------------------------------------------------------
-// GestionCuentas
+// Rutas protegidas — requieren token Sanctum
 // ------------------------------------------------------------------
-Route::get('/cuentas', [CuentaController::class, 'index'])
-    ->name('cuentas.listar-cuentas');
+Route::middleware('auth:sanctum')->group(function () {
 
-Route::get('/cuentas/{id}', [CuentaController::class, 'show'])
-    ->name('cuentas.obtener-cuenta');
+    // Auth
+    Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::get('/me',      [AuthController::class, 'me'])->name('auth.me');
 
-Route::post('/cuentas', [CuentaController::class, 'store'])
-    ->name('cuentas.crear-cuenta');
+    // ------------------------------------------------------------------
+    // Categorias
+    // ------------------------------------------------------------------
+    Route::get('/categorias', [CategoriaController::class, 'index'])
+        ->name('categorias.listar');
 
-Route::put('/cuentas/{id}', [CuentaController::class, 'update'])
-    ->name('cuentas.actualizar-cuenta');
+    Route::post('/categorias', [CategoriaController::class, 'store'])
+        ->name('categorias.crear');
 
-Route::put('/cuentas/{id}/saldo-inicial', [CuentaController::class, 'actualizarSaldoInicial'])
-    ->name('cuentas.actualizar-saldo-inicial');
+    Route::put('/categorias/{id}', [CategoriaController::class, 'update'])
+        ->name('categorias.actualizar');
 
-Route::post('/cuentas/{id}/desactivar', [CuentaController::class, 'desactivar'])
-    ->name('cuentas.desactivar-cuenta');
+    Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])
+        ->name('categorias.eliminar');
 
-// ------------------------------------------------------------------
-// Movimientos
-// ------------------------------------------------------------------
-// rutas estáticas ANTES de /{id}
-Route::get('/movimientos/buscar', [MovimientoController::class, 'buscar'])
-    ->name('movimientos.buscar-global');
+    // ------------------------------------------------------------------
+    // GestionCuentas
+    // ------------------------------------------------------------------
+    Route::get('/cuentas', [CuentaController::class, 'index'])
+        ->name('cuentas.listar-cuentas');
 
-Route::post('/movimientos/transferencia', [MovimientoController::class, 'transferencia'])
-    ->name('movimientos.crear-transferencia');
+    Route::get('/cuentas/{id}', [CuentaController::class, 'show'])
+        ->name('cuentas.obtener-cuenta');
 
-Route::get('/movimientos', [MovimientoController::class, 'index'])
-    ->name('movimientos.listar-movimientos');
+    Route::post('/cuentas', [CuentaController::class, 'store'])
+        ->name('cuentas.crear-cuenta');
 
-Route::post('/movimientos', [MovimientoController::class, 'store'])
-    ->name('movimientos.crear-movimiento');
+    Route::put('/cuentas/{id}', [CuentaController::class, 'update'])
+        ->name('cuentas.actualizar-cuenta');
 
-Route::put('/movimientos/{id}', [MovimientoController::class, 'update'])
-    ->name('movimientos.actualizar-movimiento');
+    Route::put('/cuentas/{id}/saldo-inicial', [CuentaController::class, 'actualizarSaldoInicial'])
+        ->name('cuentas.actualizar-saldo-inicial');
 
-Route::delete('/movimientos/{id}', [MovimientoController::class, 'destroy'])
-    ->name('movimientos.eliminar-movimiento');
+    Route::post('/cuentas/{id}/desactivar', [CuentaController::class, 'desactivar'])
+        ->name('cuentas.desactivar-cuenta');
 
-// ------------------------------------------------------------------
-// Pendientes
-// ------------------------------------------------------------------
-Route::get('/pendientes', [PendienteController::class, 'index'])
-    ->name('pendientes.listar-pendientes');
+    // ------------------------------------------------------------------
+    // Movimientos
+    // ------------------------------------------------------------------
+    // rutas estáticas ANTES de /{id}
+    Route::get('/movimientos/buscar', [MovimientoController::class, 'buscar'])
+        ->name('movimientos.buscar-global');
 
-Route::post('/pendientes', [PendienteController::class, 'store'])
-    ->name('pendientes.crear-pendiente');
+    Route::post('/movimientos/transferencia', [MovimientoController::class, 'transferencia'])
+        ->name('movimientos.crear-transferencia');
 
-Route::put('/pendientes/{id}', [PendienteController::class, 'update'])
-    ->name('pendientes.actualizar-pendiente');
+    Route::get('/movimientos', [MovimientoController::class, 'index'])
+        ->name('movimientos.listar-movimientos');
 
-Route::post('/pendientes/{id}/concretar', [PendienteController::class, 'concretar'])
-    ->name('pendientes.concretar-pendiente');
+    Route::post('/movimientos', [MovimientoController::class, 'store'])
+        ->name('movimientos.crear-movimiento');
 
-Route::post('/pendientes/{id}/anular', [PendienteController::class, 'anular'])
-    ->name('pendientes.anular-pendiente');
+    Route::put('/movimientos/{id}', [MovimientoController::class, 'update'])
+        ->name('movimientos.actualizar-movimiento');
 
-// ------------------------------------------------------------------
-// Presupuestos
-// ------------------------------------------------------------------
-Route::get('/presupuestos', [PresupuestoController::class, 'index'])
-    ->name('presupuestos.listar');
+    Route::delete('/movimientos/{id}', [MovimientoController::class, 'destroy'])
+        ->name('movimientos.eliminar-movimiento');
 
-Route::post('/presupuestos', [PresupuestoController::class, 'store'])
-    ->name('presupuestos.crear');
+    // ------------------------------------------------------------------
+    // Pendientes
+    // ------------------------------------------------------------------
+    Route::get('/pendientes', [PendienteController::class, 'index'])
+        ->name('pendientes.listar-pendientes');
 
-Route::put('/presupuestos/{id}', [PresupuestoController::class, 'update'])
-    ->name('presupuestos.actualizar');
+    Route::post('/pendientes', [PendienteController::class, 'store'])
+        ->name('pendientes.crear-pendiente');
 
-Route::delete('/presupuestos/{id}', [PresupuestoController::class, 'destroy'])
-    ->name('presupuestos.eliminar');
+    Route::put('/pendientes/{id}', [PendienteController::class, 'update'])
+        ->name('pendientes.actualizar-pendiente');
 
-// ------------------------------------------------------------------
-// SaldosDashboard
-// ------------------------------------------------------------------
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->name('dashboard.obtener-dashboard');
+    Route::post('/pendientes/{id}/concretar', [PendienteController::class, 'concretar'])
+        ->name('pendientes.concretar-pendiente');
 
-// ------------------------------------------------------------------
-// CierreMensual
-// ------------------------------------------------------------------
-Route::get('/meses', [MesController::class, 'index'])
-    ->name('meses.listar-meses');
+    Route::post('/pendientes/{id}/anular', [PendienteController::class, 'anular'])
+        ->name('pendientes.anular-pendiente');
 
-Route::post('/meses/{id}/cerrar', [MesController::class, 'cerrar'])
-    ->name('meses.cerrar-mes');
+    // ------------------------------------------------------------------
+    // Presupuestos
+    // ------------------------------------------------------------------
+    Route::get('/presupuestos', [PresupuestoController::class, 'index'])
+        ->name('presupuestos.listar');
 
-Route::post('/meses/{id}/reabrir', [MesController::class, 'reabrir'])
-    ->name('meses.reabrir-mes');
+    Route::post('/presupuestos', [PresupuestoController::class, 'store'])
+        ->name('presupuestos.crear');
 
-// ------------------------------------------------------------------
-// Reportes
-// ------------------------------------------------------------------
-Route::get('/reportes/resumen-mensual', [ReporteController::class, 'resumenMensual'])
-    ->name('reportes.resumen-mensual');
+    Route::put('/presupuestos/{id}', [PresupuestoController::class, 'update'])
+        ->name('presupuestos.actualizar');
 
-Route::get('/reportes/evolucion-anual', [ReporteController::class, 'evolucionAnual'])
-    ->name('reportes.evolucion-anual');
+    Route::delete('/presupuestos/{id}', [PresupuestoController::class, 'destroy'])
+        ->name('presupuestos.eliminar');
 
-Route::get('/reportes/gastos-categoria', [ReporteController::class, 'gastosPorCategoria'])
-    ->name('reportes.gastos-categoria');
+    // ------------------------------------------------------------------
+    // SaldosDashboard
+    // ------------------------------------------------------------------
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard.obtener-dashboard');
+
+    // ------------------------------------------------------------------
+    // CierreMensual
+    // ------------------------------------------------------------------
+    Route::get('/meses', [MesController::class, 'index'])
+        ->name('meses.listar-meses');
+
+    Route::post('/meses/{id}/cerrar', [MesController::class, 'cerrar'])
+        ->name('meses.cerrar-mes');
+
+    Route::post('/meses/{id}/reabrir', [MesController::class, 'reabrir'])
+        ->name('meses.reabrir-mes');
+
+    // ------------------------------------------------------------------
+    // Reportes
+    // ------------------------------------------------------------------
+    Route::get('/reportes/resumen-mensual', [ReporteController::class, 'resumenMensual'])
+        ->name('reportes.resumen-mensual');
+
+    Route::get('/reportes/evolucion-anual', [ReporteController::class, 'evolucionAnual'])
+        ->name('reportes.evolucion-anual');
+
+    Route::get('/reportes/gastos-categoria', [ReporteController::class, 'gastosPorCategoria'])
+        ->name('reportes.gastos-categoria');
+});

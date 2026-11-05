@@ -7,6 +7,7 @@ mkdir -p storage/framework/cache \
          storage/logs \
          bootstrap/cache
 
+php artisan package:discover --ansi
 php artisan migrate --force
 
 exec "$@"

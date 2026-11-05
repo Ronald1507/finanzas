@@ -1,0 +1,23 @@
+# ── Frontend — deploy independiente ─────────────────────────────────────────
+# Levanta el SPA de React como archivos estáticos servidos por nginx.
+# El build de Vite ocurre dentro del contenedor (no necesita Node en el server).
+#
+# Variables de entorno requeridas:
+#   VITE_API_URL   — URL pública del backend (ej: https://api.tudominio.com/api)
+#                    Se bake en el build — debe definirse antes de `docker compose up`
+#
+# Uso:
+#   VITE_API_URL=https://api.tudominio.com/api docker compose up -d
+#   — o —
+#   Crear un archivo .env con VITE_API_URL=... y luego docker compose up -d
+
+services:
+  frontend:
+    build:
+      context: .
+      target: prod
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - "80:80"
+    restart: unless-stopped

@@ -1,0 +1,63 @@
+# ── Backend — deploy independiente en VPS ───────────────────────────────────
+# Levanta Laravel + PostgreSQL sin el frontend.
+#
+# Variables de entorno requeridas (definir en shell o en un archivo .env):
+#   APP_KEY                 — php artisan key:generate --show
+#   DB_PASSWORD             — contraseña de PostgreSQL
+#   CORS_ALLOWED_ORIGINS    — URL del frontend (ej: https://app.tudominio.com)
+#
+# Opcionales (tienen valores por defecto):
+#   APP_URL                 — URL pública del backend  (default: http://localhost:8000)
+#   DB_DATABASE             — nombre de la base de datos (default: finanzas)
+#   DB_USERNAME             — usuario de PostgreSQL      (default: finanzas)
+#
+# Uso:
+#   docker compose up -d
+#   docker compose logs -f backend
+
+services:
+  backend:
+    build:
+      context: .
+      target: prod
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY}
+      APP_URL: ${APP_URL:-http://localhost:8000}
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-finanzas}
+      DB_USERNAME: ${DB_USERNAME:-finanzas}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
+      CACHE_STORE: file
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-finanzas}
+      POSTGRES_USER: ${DB_USERNAME:-finanzas}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-finanzas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:

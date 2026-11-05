@@ -22,8 +22,8 @@ use Illuminate\Support\Facades\Route;
 // ------------------------------------------------------------------
 // Auth (público — sin token)
 // ------------------------------------------------------------------
-Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
-Route::post('/login',    [AuthController::class, 'login'])->name('auth.login');
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1')->name('auth.register');
+Route::post('/login',    [AuthController::class, 'login'])->middleware('throttle:5,1')->name('auth.login');
 
 // ------------------------------------------------------------------
 // Rutas protegidas — requieren token Sanctum

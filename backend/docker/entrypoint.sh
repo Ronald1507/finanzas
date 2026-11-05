@@ -7,7 +7,12 @@ mkdir -p storage/framework/cache \
          storage/logs \
          bootstrap/cache
 
-php artisan package:discover --ansi
-php artisan migrate --force
+php artisan package:discover --ansi || true
+
+echo "Waiting for database..."
+until php artisan migrate --force 2>&1; do
+    echo "DB not ready — retrying in 3s..."
+    sleep 3
+done
 
 exec "$@"

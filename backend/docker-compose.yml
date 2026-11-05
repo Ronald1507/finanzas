@@ -5,16 +5,21 @@
 #   Solo backend (BD externa):    docker compose up -d
 #   Solo BD:                      docker compose --profile with-db up -d db
 #
-# Variables de entorno requeridas:
+# En LOCAL (usando el .env de la raíz del monorepo):
+#   docker compose --env-file ../.env --profile with-db up -d --build
+#
+# En VPS (crear backend/.env con las variables requeridas):
+#   docker compose --profile with-db up -d
+#
+# Variables requeridas en .env o shell:
 #   APP_KEY                 — php artisan key:generate --show
 #   DB_PASSWORD             — contraseña de PostgreSQL
-#   CORS_ALLOWED_ORIGINS    — URL del frontend (ej: https://app.tudominio.com)
 #
-# Opcionales:
-#   APP_URL                 — URL pública del backend  (default: http://localhost:8000)
-#   DB_HOST                 — host de la BD            (default: db — el contenedor)
+# Variables opcionales:
 #   DB_DATABASE             — nombre de la BD          (default: finanzas)
-#   DB_USERNAME             — usuario de PostgreSQL    (default: finanzas)
+#   DB_USERNAME             — usuario de PostgreSQL    (default: finanzas_admin)
+#   CORS_ALLOWED_ORIGINS    — origen permitido         (default: http://localhost)
+#   APP_URL                 — URL pública del backend  (default: http://localhost:8000)
 
 services:
   backend:
@@ -29,10 +34,10 @@ services:
       APP_KEY: ${APP_KEY}
       APP_URL: ${APP_URL:-http://localhost:8000}
       DB_CONNECTION: pgsql
-      DB_HOST: ${DB_HOST:-db}
-      DB_PORT: ${DB_PORT:-5432}
+      DB_HOST: db
+      DB_PORT: 5432
       DB_DATABASE: ${DB_DATABASE:-finanzas}
-      DB_USERNAME: ${DB_USERNAME:-finanzas}
+      DB_USERNAME: ${DB_USERNAME:-finanzas_admin}
       DB_PASSWORD: ${DB_PASSWORD}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
       CACHE_STORE: file
@@ -47,7 +52,7 @@ services:
     profiles: [with-db]
     environment:
       POSTGRES_DB: ${DB_DATABASE:-finanzas}
-      POSTGRES_USER: ${DB_USERNAME:-finanzas}
+      POSTGRES_USER: ${DB_USERNAME:-finanzas_admin}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -55,7 +60,7 @@ services:
       - "5432:5432"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-finanzas}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-finanzas_admin}"]
       interval: 10s
       timeout: 5s
       retries: 5
